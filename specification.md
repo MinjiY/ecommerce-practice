@@ -5,6 +5,10 @@
 👉🏻[시퀀스 다이어그램](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-시퀀스다이어그램)   
 👉🏻[ERD 설계](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-erd-설계)   
 
+## 💻 Step 4. Mock API, Swagger-UI 
+👉🏻[Mock API](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-erd-설계)   
+👉🏻[Mock API](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-erd-설계)
+
 ---
 ## 📄 요구사항 정의
 ### 기능 요구사항
@@ -195,6 +199,12 @@ CREATE TABLE PAY_MONEY_HISTORY
 
 ---
 
+## 💎 Mock API
+
+### 1. Mock API
+[커밋링크](https://github.com/MinjiY/ecommerce-practice/commit/9c8502869767454cac46e7d568dd08a9f02bf72b)
+### 2. Swagger-UI
+![image/swagger-ui.png](image/swagger-ui.png)
 
 
 
