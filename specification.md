@@ -1,8 +1,9 @@
 
 ## 📝 Step 3. 요구사항 정의 및 시퀀스 다이어그램, ERD 설계
 👉🏻[요구사항 정의](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-요구사항-정의)   
+👉🏻[ERD 설계](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-erd-설계)
 👉🏻[시퀀스 다이어그램](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-시퀀스다이어그램)   
-👉🏻[ERD 설계](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-erd-설계)   
+👉🏻[ERD 설계](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-이벤트-스토밍)   
 
 ---
 ## 📄 요구사항 정의
@@ -46,6 +47,32 @@
     - 시간당 평균 이용자가 10만명이라고 할때, 주문(결제)는 초당 1000명까지 요청 가능해야한다.
 
 ---
+## 📊 이벤트 스토밍
+1. 도메인 이벤트 도출
+![image/event.png](image/event.png)
+
+2. 커맨드 도출 (이벤트를 트리거하는 행동)
+![image/event2.png](image/event2.png)
+
+3. 액터 도출
+![image/event3.png](image/event3.png)
+
+4. 외부서비스 도출
+![image/event4.png](image/event4.png)
+
+5. 어그리게이터 도출 (상태가 변경되는 데이터 묶음, 연관되는 엔티티와 값 객체의 묶음)
+![image/event5.png](image/event5.png)
+
+6. Bounded Context 정의
+![image/event6.png](image/event6.png)
+
+7. 정책 도출
+![image/event7.png](image/event7.png)
+
+8. 호출관계 명확하게 하기
+![image/event8.png](image/event8.png)
+
+
 ## 📌 시퀀스다이어그램
 
 ### 1. 금액 충전
