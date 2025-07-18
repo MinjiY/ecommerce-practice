@@ -1,9 +1,9 @@
 
 ## 📝 Step 3. 요구사항 정의 및 시퀀스 다이어그램, ERD 설계
 👉🏻[요구사항 정의](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-요구사항-정의)   
-👉🏻[ERD 설계](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-erd-설계)
+👉🏻[이벤트 스토밍](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-이벤트-스토밍)   
 👉🏻[시퀀스 다이어그램](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-시퀀스다이어그램)   
-👉🏻[ERD 설계](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-이벤트-스토밍)   
+👉🏻[ERD 설계](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-erd-설계)   
 
 ---
 ## 📄 요구사항 정의
