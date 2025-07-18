@@ -6,8 +6,8 @@
 👉🏻[ERD 설계](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-erd-설계)   
 
 ## 💻 Step 4. Mock API, Swagger-UI 
-👉🏻[Mock API](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-erd-설계)   
-👉🏻[Mock API](https://github.com/MinjiY/ecommerce-practice/blob/step03/specification.md#-erd-설계)
+👉🏻[Mock API](https://github.com/MinjiY/ecommerce-practice/blob/step04/specification.md#1-mock-api)   
+👉🏻[Swagger-UI](https://github.com/MinjiY/ecommerce-practice/blob/step04/specification.md#2-swagger-ui)
 
 ---
 ## 📄 요구사항 정의
