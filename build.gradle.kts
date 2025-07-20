@@ -35,7 +35,14 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 
-    // DB
+	compileOnly("org.projectlombok:lombok:1.18.30")
+	annotationProcessor("org.projectlombok:lombok:1.18.30")
+	testCompileOnly("org.projectlombok:lombok:1.18.30")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+
+	// DB
 	runtimeOnly("com.mysql:mysql-connector-j")
 
     // Test
