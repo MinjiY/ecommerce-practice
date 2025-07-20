@@ -95,11 +95,11 @@
 ---
 ## 👩‍💻 ERD 설계
 [DDL 파일](https://github.com/MinjiY/ecommerce-practice/blob/step03/ddl.sql)
-![image/erd.png](image/erd.png)
+![image/erd.png](image/erd.png)   
 
 <details><summary> DDL </summary>
-![https://github.com/MinjiY/ecommerce-practice/blob/step03/ddl.sql]() 
-```sql 
+
+```sql
 CREATE TABLE USERS
 (
     USER_ID  BIGINT AUTO_INCREMENT PRIMARY KEY,
