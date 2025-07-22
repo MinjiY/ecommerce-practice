@@ -10,6 +10,15 @@
 👉🏻[Swagger-UI](https://github.com/MinjiY/ecommerce-practice/blob/step04/specification.md#2-swagger-ui)
 
 ---
+## 📖 시나리오
+### 주문 시나리오
+사용자는 상품을 선택하여 주문을 위해 주문서 작성으로 넘어간다.
+주문서 작성중에 쿠폰을 사용하고 싶다면 모달을 띄워 현재 사용 가능한 쿠폰을 조회한다, 사용 가능한 쿠폰은 여러개일 수 있다.
+사용 가능한 쿠폰을 확인하고 리스트 중 사용할 쿠폰을 선택해서 현재 결제 금액에 할인된 금액을 적용한다.
+결제를 위해서는 충전된 금액이 있어야 하며, 충전된 금액이 부족하면 결제를 할 수 없다.
+결제 금액이 충전된 금액보다 크면 결제할 수 없다는 메시지를 띄운다.
+
+
 ## 📄 요구사항 정의
 ### 기능 요구사항
 - 사용자는 결제에 사용될 금액을 충전한다.
@@ -96,6 +105,12 @@
 ## 👩‍💻 ERD 설계
 [DDL 파일](https://github.com/MinjiY/ecommerce-practice/blob/step03/ddl.sql)
 ![image/erd.png](image/erd.png)   
+- 하나의 쿠폰을 여러 사용자가 발급받을 수 있다.
+- 한명의 사용자는 여러 쿠폰을 발급받을 수 있다.   
+=> `MAP_USER_COUPON` 테이블을 통해 다대다 관계를 표현한다.
+- 하나의 쿠폰 정책을 여러 쿠폰이 가질 수 있다.   
+=> ex) 1월 30% 할인 쿠폰, 선착순 30% 할인쿠폰
+
 
 <details><summary> DDL </summary>
 
@@ -194,9 +209,9 @@ CREATE TABLE PAY_MONEY_HISTORY
     UPDATED_AT           TIMESTAMP   NOT NULL,
     FOREIGN KEY (PAY_MONEY_ID) REFERENCES PAY_MONEY (PAY_MONEY_ID)
 );
+```
 
 </details>
-
 ---
 
 ## 💎 Mock API
