@@ -1,8 +1,7 @@
 package kr.hhplus.be.server.order.infrastructure.entity;
 
-
 import jakarta.persistence.*;
-import kr.hhplus.be.server.order.common.OrderStatus;
+import kr.hhplus.be.server.order.common.PaymentStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,22 +9,29 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "payment_history")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderEntity {
+public class PaymentHistoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderId;
+    private Long paymentHistoryId;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private OrderEntity order;
 
     private Long userId;
+    private Long amount;
+    private Long discountAmount;
+    private Long couponId;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus;
+    private PaymentStatus paymentStatus;
 
-    private Long totalAmount;
-    private Long discountAmount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+
 
 }
