@@ -17,12 +17,8 @@ public class PaymentHistoryEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paymentHistoryId;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private OrderEntity order;
-
     private Long userId;
-    private Long amount;
+    private Long totalAmount;
     private Long discountAmount;
     private Long couponId;
 
@@ -30,10 +26,9 @@ public class PaymentHistoryEntity extends BaseTimeEntity {
     private PaymentStatus paymentStatus;
 
     @Builder
-    public PaymentHistoryEntity(OrderEntity order, Long userId, Long amount, Long discountAmount, Long couponId, PaymentStatus paymentStatus) {
-        this.order = order;
+    public PaymentHistoryEntity(Long userId, Long totalAmount, Long discountAmount, Long couponId, PaymentStatus paymentStatus) {
         this.userId = userId;
-        this.amount = amount;
+        this.totalAmount = totalAmount;
         this.discountAmount = discountAmount;
         this.couponId = couponId;
         this.paymentStatus = paymentStatus;
