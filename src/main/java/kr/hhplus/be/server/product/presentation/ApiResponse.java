@@ -1,16 +1,15 @@
-package kr.hhplus.be.server.controller;
+package kr.hhplus.be.server.product.presentation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
 @Builder
+@Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
