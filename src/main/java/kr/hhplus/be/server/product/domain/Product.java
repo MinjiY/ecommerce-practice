@@ -2,11 +2,13 @@ package kr.hhplus.be.server.product.domain;
 
 import kr.hhplus.be.server.product.common.ProductState;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder
 @AllArgsConstructor
-public class Products {
+public class Product {
     private final Long productId;
 
     private final String name;
@@ -18,5 +20,4 @@ public class Products {
     private final Integer quantity;
 
     private final ProductState productState;
-
 }

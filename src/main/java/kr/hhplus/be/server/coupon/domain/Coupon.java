@@ -7,7 +7,7 @@ import kr.hhplus.be.server.coupon.common.CouponState;
 import java.math.BigDecimal;
 
 @AllArgsConstructor
-public class Coupons {
+public class Coupon {
     private final Long id;
     private final String code;
     private final CouponState state;

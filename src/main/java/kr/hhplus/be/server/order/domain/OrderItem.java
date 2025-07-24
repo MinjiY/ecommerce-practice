@@ -4,7 +4,7 @@ import kr.hhplus.be.server.order.infrastructure.entity.OrderEntity;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class OrderItems {
+public class OrderItem {
     private final Long orderItemId;
     private final OrderEntity order;
     private final Long userId;

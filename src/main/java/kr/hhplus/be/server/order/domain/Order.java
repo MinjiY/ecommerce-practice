@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
-public class Orders {
+public class Order {
     private final Long orderId;
     private final Long userId;
     private final String orderStatus;
