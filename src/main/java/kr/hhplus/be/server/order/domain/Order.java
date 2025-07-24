@@ -1,14 +1,17 @@
 package kr.hhplus.be.server.order.domain;
 
+import kr.hhplus.be.server.order.common.OrderStatus;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 @AllArgsConstructor
 public class Order {
     private final Long orderId;
     private final Long userId;
-    private final String orderStatus;
+    private final OrderStatus orderStatus;
     private final Long totalAmount;
     private final Long discountAmount;
     private final LocalDateTime createdAt;

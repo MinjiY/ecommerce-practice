@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Profile;
 
 @Entity
 @Table(name = "orders")
@@ -31,5 +32,11 @@ public class OrderEntity extends BaseTimeEntity {
         this.orderStatus = orderStatus;
         this.totalAmount = totalAmount;
         this.discountAmount = discountAmount;
+    }
+
+    // for Test
+    @Profile("test")
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 }
