@@ -2,11 +2,13 @@ package kr.hhplus.be.server.order.domain;
 
 import kr.hhplus.be.server.order.common.OrderStatus;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Builder
 @AllArgsConstructor
 public class Order {
     private final Long orderId;
