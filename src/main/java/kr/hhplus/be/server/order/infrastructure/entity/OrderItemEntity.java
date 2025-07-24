@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Profile;
 
 @Entity
 @Table(name = "order_items")
@@ -33,5 +34,10 @@ public class OrderItemEntity {
         this.productAmount = productAmount;
         this.orderQuantity = orderQuantity;
         this.productId = productId;
+    }
+
+    @Profile("test")
+    public void setOrderEntity(OrderEntity orderEntity) {
+        this.order = orderEntity;
     }
 }

@@ -108,5 +108,61 @@ class OrderEntityTest {
     }
 
 
+    @Test
+    @DisplayName("주문상품 도메인이 엔티티에 정상적으로 매핑된다.")
+    void testOrderItemToOrderItemEntity() {
+        // given
+        OrderItem orderItem = OrderItem.builder()
+                .userId(1L)
+                .orderQuantity(2)
+                .productName("Test Product")
+                .productAmount(2000L)
+                .productId(100L)
+                .build();
+
+
+        // when
+        OrderItemEntity orderItemEntity = orderMapper.domainToOrderItemEntity(orderItem);
+
+        // then
+        assertAll(
+            () -> assertNotNull(orderItemEntity),
+            () -> assertEquals(orderItem.getUserId(), orderItemEntity.getUserId()),
+            () -> assertEquals(orderItem.getProductName(), orderItemEntity.getProductName()),
+            () -> assertEquals(orderItem.getProductAmount(), orderItemEntity.getProductAmount()),
+            () -> assertEquals(orderItem.getOrderQuantity(), orderItemEntity.getOrderQuantity()),
+            () -> assertEquals(orderItem.getProductId(), orderItemEntity.getProductId())
+        );
+    }
+
+//    @Test
+//    @DisplayName("주문 엔티티가 주문 테이블에 정상적으로 저장된다.")
+//    void testOrderEntitySave() {
+//        long orderId = 1L;
+//        // given
+//        OrderEntity orderEntity = OrderEntity.builder()
+//                .userId(1L)
+//                .orderStatus(OrderStatus.COMPLETED)
+//                .totalAmount(20000L)
+//                .discountAmount(2000L)
+//                .build();
+//        orderEntity.setOrderId(orderId);
+//        when(orderRepository.save(orderEntity)).thenReturn(orderEntity);
+//
+//        // when
+//        OrderEntity savedOrderEntity = orderRepository.save(orderEntity);
+//
+//        // then
+//        assertAll(
+//            () -> assertNotNull(savedOrderEntity),
+//            () -> assertEquals(orderId, savedOrderEntity.getOrderId()),
+//            () -> assertEquals(orderEntity.getUserId(), savedOrderEntity.getUserId()),
+//            () -> assertEquals(orderEntity.getOrderStatus(), savedOrderEntity.getOrderStatus()),
+//            () -> assertEquals(orderEntity.getTotalAmount(), savedOrderEntity.getTotalAmount()),
+//            () -> assertEquals(orderEntity.getDiscountAmount(), savedOrderEntity.getDiscountAmount())
+//        );
+//    }
+
+
 
 }
