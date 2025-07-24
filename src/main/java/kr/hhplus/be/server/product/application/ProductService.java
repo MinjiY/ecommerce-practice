@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.product.application;
 
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO.ProductResult;
+import kr.hhplus.be.server.product.domain.Product;
 import kr.hhplus.be.server.product.infrastructure.entity.ProductEntity;
 import kr.hhplus.be.server.product.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +13,8 @@ public class ProductService {
 
     private ProductRepository productRepository;
 
+
     public ProductResult findProduct(Long productId) {
-        ProductEntity productEntity = productRepository.findById(productId);
-        return ProductResult.from(ProductMapper.INSTANCE.entityToDomain(productEntity));
+        return ProductResult.from(productRepository.findById(productId));
     }
 }
