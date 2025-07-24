@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,25 +36,25 @@ class ProductServiceTest {
     void findProduct() {
         // given
         long productId = 1L;
-
-        ProductEntity productEntity = ProductEntity.builder()
+        Product product = Product.builder()
+                .productId(productId)
+                .productState(ProductState.AVAILABLE)
                 .name("자바 네트워크 프로그래밍")
                 .description("자바로 배우는 네트워크 프로그래밍의 기초")
                 .price(18000L)
                 .category("IT")
                 .quantity(3)
-                .productState(ProductState.AVAILABLE)
-                .build();
-        productEntity.setProductId(productId);
-        Product expectedProduct = productMapper.entityToDomain(productEntity);
-        ProductResult expectedResponse = ProductResult.from(expectedProduct);
 
-        when(productRepository.findById(productId)).thenReturn(productEntity);
+                .build();
+        ProductResult expectedResponse = ProductResult.from(product);
+
+        when(productRepository.findById(productId)).thenReturn(product);
 
         // when
         ProductResult result = productService.findProduct(productId);
 
         // then
+        verify(productRepository).findById(productId);
         assertAll(
             () -> assertNotNull(result, "상품 조회 결과가 null이 아닙니다."),
             () -> assertEquals(expectedResponse.getProductId(), result.getProductId(), "상품 ID가 일치합니다."),
