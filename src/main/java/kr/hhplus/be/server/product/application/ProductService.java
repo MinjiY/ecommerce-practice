@@ -17,4 +17,10 @@ public class ProductService {
     public ProductResult findProduct(Long productId) {
         return ProductResult.from(productRepository.findById(productId));
     }
+
+    public ProductResult decreaseStock(Long productId, Integer quantity) {
+        Product product = productRepository.findById(productId);
+        product.decreaseQuantity(quantity);
+        return ProductResult.from(productRepository.save(product));
+    }
 }

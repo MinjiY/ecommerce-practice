@@ -5,5 +5,5 @@ import kr.hhplus.be.server.product.infrastructure.entity.ProductEntity;
 
 public interface ProductRepository{
     Product findById(Long productId);
-    Product save(ProductEntity productEntity);
+    Product save(Product product);
 }

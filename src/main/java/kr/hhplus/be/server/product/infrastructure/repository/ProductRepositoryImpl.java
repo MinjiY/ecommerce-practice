@@ -12,14 +12,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public class ProductRepositoryImpl implements ProductRepository {
 
     private final JpaRepository<ProductEntity, Long> productRepository;
-
+    private final ProductMapper productMapper;
     @Override
     public Product findById(Long productId) {
         return ProductMapper.INSTANCE.entityToDomain(productRepository.findById(productId).orElseThrow(ResourceNotFoundException::new));
     }
 
     @Override
-    public Product save(ProductEntity productEntity) {
-        return ProductMapper.INSTANCE.entityToDomain(productRepository.save(productEntity));
+    public Product save(Product product) {
+        return ProductMapper.INSTANCE.entityToDomain(productRepository.save(productMapper.domainToEntity(product)));
     }
 }
