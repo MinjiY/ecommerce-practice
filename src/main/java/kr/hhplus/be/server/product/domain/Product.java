@@ -32,6 +32,14 @@ public class Product {
             );
         }
         this.quantity -= quantity;
+
+        if( this.quantity == 0) {
+            setProductStateSoldOut();
+        }
+    }
+
+    public void setProductStateSoldOut() {
+        this.productState = ProductState.SOLD_OUT;
     }
 
 }
