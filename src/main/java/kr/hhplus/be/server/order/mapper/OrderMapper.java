@@ -23,16 +23,24 @@ public interface OrderMapper {
     @Mapping(target= "totalAmount", source = "orderedAmount")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "orderId", ignore = true)
+    @Mapping(target = "orderStatus", ignore = true)
     Order dtoToDomain(OrderCommandDTO.CreateOrderCommand createOrderCommand);
+
     OrderItem dtoToDomain(OrderCommandDTO.CreateOrderItemCommand createOrderItemCommand);
 
     OrderEntity domainToOrderEntity(Order order);
+
+    @Mapping(target = "order", ignore = true)
     OrderItemEntity domainToOrderItemEntity(OrderItem orderItem);
 
     Order entityToOrderDomain(OrderEntity orderEntity);
     OrderItem entityToOrderItemDomain(OrderItemEntity orderItemEntity);
 
+    @Mapping(target = "orderedProducts", ignore = true)
     OrderCommandDTO.CreateOrderCommand requestToCommand(RequestDTO.CreateOrderRequest createOrderRequest);
     OrderCommandDTO.CreateOrderItemCommand requestToCommand(RequestDTO.CreateOrderItemRequest createOrderItemRequest);
+
+
 
 }

@@ -9,9 +9,9 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class OrderItem {
-    private final Long userId;
-    private final String productName;
-    private final Long productAmount;
-    private final Integer orderQuantity;
-    private final Long productId;
+    private Long userId;
+    private String productName;
+    private Long productAmount;
+    private Integer orderQuantity;
+    private Long productId;
 }
