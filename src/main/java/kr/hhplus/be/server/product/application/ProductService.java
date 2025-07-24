@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.product.application;
 
+import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO.ProductResult;
 import kr.hhplus.be.server.product.infrastructure.repository.ProductRepository;
 import kr.hhplus.be.server.product.mapper.ProductMapper;
@@ -16,6 +17,6 @@ public class ProductService {
         return productRepository.findById(productId)
                 .map(ProductMapper.INSTANCE::entityToDomain)
                 .map(ProductResult::from)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + productId));
+                .orElseThrow(ResourceNotFoundException::new);
     }
 }

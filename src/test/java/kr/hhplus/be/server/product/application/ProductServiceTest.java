@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.product.application;
 
+import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO.ProductResult;
 import kr.hhplus.be.server.product.common.ProductState;
 import kr.hhplus.be.server.product.domain.Product;
@@ -63,5 +64,16 @@ class ProductServiceTest {
             () -> assertEquals(expectedResponse.getQuantity(), result.getQuantity(), "상품 수량이 일치합니다."),
             () -> assertEquals(expectedResponse.getProductState(), result.getProductState(), "상품 상태가 일치합니다.")
         );
+    }
+
+    @DisplayName("상품을 조회할 때, 상품이 존재하지 않으면 ResourceNotFoundException을 발생시킨다.")
+    @Test
+    void findProductNotFound() {
+        // given
+        long productId = 999L;
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> {
+            productService.findProduct(productId); // 존재하지 않는 상품 ID로 조회
+        });
     }
 }
