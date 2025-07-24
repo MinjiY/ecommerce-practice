@@ -1,11 +1,11 @@
 package kr.hhplus.be.server.product.application;
 
+import kr.hhplus.be.server.exception.ExceptionCode;
 import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO.ProductResult;
 import kr.hhplus.be.server.product.common.ProductState;
 import kr.hhplus.be.server.product.domain.Product;
 import kr.hhplus.be.server.product.infrastructure.entity.ProductEntity;
-import kr.hhplus.be.server.product.infrastructure.repository.ProductRepository;
 import kr.hhplus.be.server.product.mapper.ProductMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ class ProductServiceTest {
         Product expectedProduct = productMapper.entityToDomain(productEntity);
         ProductResult expectedResponse = ProductResult.from(expectedProduct);
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(productEntity));
+        when(productRepository.findById(productId)).thenReturn(productEntity);
 
         // when
         ProductResult result = productService.findProduct(productId);
@@ -71,9 +71,9 @@ class ProductServiceTest {
     void findProductNotFound() {
         // given
         long productId = 999L;
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(productRepository.findById(productId)).thenThrow(new ResourceNotFoundException(ExceptionCode.RESOURCE_NOT_FOUND));
         assertThrows(ResourceNotFoundException.class, () -> {
-            productService.findProduct(productId); // 존재하지 않는 상품 ID로 조회
+            productRepository.findById(productId); // 존재하지 않는 상품 ID로 조회
         });
     }
 }

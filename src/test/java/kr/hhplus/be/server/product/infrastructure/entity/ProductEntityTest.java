@@ -2,7 +2,7 @@ package kr.hhplus.be.server.product.infrastructure.entity;
 
 import kr.hhplus.be.server.product.common.ProductState;
 import kr.hhplus.be.server.product.domain.Product;
-import kr.hhplus.be.server.product.infrastructure.repository.ProductRepository;
+import kr.hhplus.be.server.product.application.ProductRepository;
 import kr.hhplus.be.server.product.mapper.ProductMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -123,10 +123,10 @@ class ProductEntityTest {
                 .build();
         productEntity.setProductId(productId);
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(productEntity));
+        when(productRepository.findById(productId)).thenReturn(productEntity);
 
         // when
-        ProductEntity findProductEntity = productRepository.findById(productId).orElse(null);
+        ProductEntity findProductEntity = productRepository.findById(productId);
 
         // then
         assertNotNull(findProductEntity);
