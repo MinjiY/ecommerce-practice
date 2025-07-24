@@ -13,7 +13,7 @@ public class Products {
     private final String description;
     private final String category;
     private final Long price;
-    private final LocalDateTime registeredAt;
+    private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private final Integer quantity;
 

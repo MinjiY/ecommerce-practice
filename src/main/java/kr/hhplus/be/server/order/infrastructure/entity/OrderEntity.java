@@ -4,16 +4,15 @@ package kr.hhplus.be.server.order.infrastructure.entity;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.order.common.OrderStatus;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderEntity {
+public class OrderEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
@@ -25,7 +24,12 @@ public class OrderEntity {
 
     private Long totalAmount;
     private Long discountAmount;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
+    @Builder
+    public OrderEntity(Long userId, OrderStatus orderStatus, Long totalAmount, Long discountAmount) {
+        this.userId = userId;
+        this.orderStatus = orderStatus;
+        this.totalAmount = totalAmount;
+        this.discountAmount = discountAmount;
+    }
 }

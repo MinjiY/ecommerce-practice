@@ -3,16 +3,15 @@ package kr.hhplus.be.server.point.infrastructure.entity;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.point.common.TransactionType;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "point_history")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PointHistoryEntity {
+public class PointHistoryEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pointHistoryId;
@@ -24,8 +23,14 @@ public class PointHistoryEntity {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
-    private LocalDateTime requestedAt;
-    private LocalDateTime updatedAt;
+
+    @Builder
+    public PointHistoryEntity(Long userId, Long pointId, Long amount, TransactionType transactionType) {
+        this.userId = userId;
+        this.pointId = pointId;
+        this.amount = amount;
+        this.transactionType = transactionType;
+    }
 }
 
 

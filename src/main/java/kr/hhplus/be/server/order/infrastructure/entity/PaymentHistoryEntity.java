@@ -3,16 +3,16 @@ package kr.hhplus.be.server.order.infrastructure.entity;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.order.common.PaymentStatus;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payment_history")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PaymentHistoryEntity {
+public class PaymentHistoryEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paymentHistoryId;
@@ -29,9 +29,15 @@ public class PaymentHistoryEntity {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
+    @Builder
+    public PaymentHistoryEntity(OrderEntity order, Long userId, Long amount, Long discountAmount, Long couponId, PaymentStatus paymentStatus) {
+        this.order = order;
+        this.userId = userId;
+        this.amount = amount;
+        this.discountAmount = discountAmount;
+        this.couponId = couponId;
+        this.paymentStatus = paymentStatus;
+    }
 
 
 }
