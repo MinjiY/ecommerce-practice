@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.mockito.Mock;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -104,5 +106,35 @@ class ProductEntityTest {
         assertEquals(productEntity.getPrice(), savedProductEntity.getPrice());
         assertEquals(productEntity.getQuantity(), savedProductEntity.getQuantity());
         assertEquals(ProductState.AVAILABLE, savedProductEntity.getProductState());
+    }
+
+    @DisplayName("상품 엔티티가 Id를 기준으로 조회가 가능하다.")
+    @Test
+    public void testProductEntityFindById(){
+        // given
+        long productId = 1L;
+        ProductEntity productEntity = ProductEntity.builder()
+                .name("도메인 주도 개발 시작하기")
+                .description("DDD 핵심 개념 정리부터 구현까지")
+                .category("IT")
+                .price(18000L)
+                .quantity(1)
+                .productState(ProductState.AVAILABLE)
+                .build();
+        productEntity.setProductId(productId);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(productEntity));
+
+        // when
+        ProductEntity findProductEntity = productRepository.findById(productId).orElse(null);
+
+        // then
+        assertNotNull(findProductEntity);
+        assertEquals(productEntity.getName(), findProductEntity.getName());
+        assertEquals(productEntity.getDescription(), findProductEntity.getDescription());
+        assertEquals(productEntity.getCategory(), findProductEntity.getCategory());
+        assertEquals(productEntity.getPrice(), findProductEntity.getPrice());
+        assertEquals(productEntity.getQuantity(), findProductEntity.getQuantity());
+        assertEquals(ProductState.AVAILABLE, findProductEntity.getProductState());
     }
 }
