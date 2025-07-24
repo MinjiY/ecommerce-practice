@@ -1,10 +1,12 @@
-package kr.hhplus.be.server.order.infrastructure.repository;
+package kr.hhplus.be.server.order.application;
 
 
+import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.infrastructure.entity.OrderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
+
+public interface OrderRepository{
+    Order save(Order order);
 }
