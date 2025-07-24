@@ -30,4 +30,27 @@ class ProductTest {
         });
         assertEquals(remainingQuantity, product.getQuantity(), "수량이 변경되지 않아야 합니다.");
     }
+
+    @DisplayName("상품의 재고가 주문 요청 수량보다 크면 성공한다.")
+    @Test
+    void decreaseQuantitySuccess() {
+        // given
+        int remainingQuantity = 10;
+        int quantityToDecrease = 5;
+        int expectedQuantity = remainingQuantity- quantityToDecrease;
+        Product product = Product.builder()
+                .productId(1L)
+                .name("도메인 주도 개발 시작하기")
+                .description("도메인 주도 개발의 기초를 배우는 책입니다.")
+                .price(10000L)
+                .category("IT")
+                .quantity(remainingQuantity)
+                .build();
+
+        // when
+        product.decreaseQuantity(quantityToDecrease);
+
+        // then
+        assertEquals(expectedQuantity, product.getQuantity(), "상품의 수량이 감소해야 합니다.");
+    }
 }
