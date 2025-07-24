@@ -13,11 +13,12 @@ public enum ExceptionCode {
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "E003", "Invalid Input Value"),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "E004", "Method Not Allowed"),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "E005", "Access Denied"),
-    PERSONA_IS_NOT_IN_THE_ROOM(HttpStatus.FORBIDDEN, "E006", "Persona Not In This Room"),
-    AUTHORIZATION_DENIED(HttpStatus.FORBIDDEN, "E007", "Authorization Denied"),
+    AUTHORIZATION_DENIED(HttpStatus.FORBIDDEN, "E006", "Authorization Denied"),
+
+    // custom
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "Resource Not Found"),
-
-
+    INSUFFICIENT_STOCK(HttpStatus.BAD_REQUEST, "R002", "Insufficient Stock"),
+    ORDERE_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "R003", "Ordered Amount Mismatch"),
 
     REQUEST_FAILED(HttpStatus.BAD_REQUEST, "P001", "Request Failed");
 

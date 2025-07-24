@@ -10,7 +10,7 @@ public class InsufficientStockException extends ecommerceServerException{
     }
 
     public InsufficientStockException(String message) {
-        super(ExceptionCode.RESOURCE_NOT_FOUND, message);
+        super(ExceptionCode.INSUFFICIENT_STOCK, message);
     }
 
     public InsufficientStockException(ExceptionCode exceptionCode) {
@@ -18,7 +18,7 @@ public class InsufficientStockException extends ecommerceServerException{
     }
 
     public InsufficientStockException() {
-        super(ExceptionCode.RESOURCE_NOT_FOUND);
+        super(ExceptionCode.INSUFFICIENT_STOCK);
     }
 
 }

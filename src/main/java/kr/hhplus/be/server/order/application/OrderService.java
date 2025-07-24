@@ -17,16 +17,17 @@ public class OrderService {
     private OrderItemRepository orderItemRepository;
 
     public OrderCommandDTO.CreateOrderResult createOrder(CreateOrderCommand createOrderCommand) {
+        List<OrderItem> orderItems = createOrderCommand.getOrderedProducts().stream()
+                .map(OrderCommandDTO.CreateOrderItemCommand::toDomain)
+                .toList();
+        Order order = createOrderCommand.toDomain();
+        order.orderedAmountMismatch(orderItems);
+
         // 주문 생성
-        Order savedOrder = orderRepository.save(createOrderCommand.toDomain());
+        Order savedOrder = orderRepository.save(order);
 
         // 주문 아이템 저장
-        List<OrderItem> savedOrderItems = orderItemRepository.saveAll(
-                savedOrder,
-                createOrderCommand.getOrderedProducts().stream()
-                .map(OrderCommandDTO.CreateOrderItemCommand::toDomain)
-                .toList());
-
+        List<OrderItem> savedOrderItems = orderItemRepository.saveAll(savedOrder, orderItems);
         return OrderCommandDTO.CreateOrderResult.from(savedOrder, savedOrderItems);
     }
 }
