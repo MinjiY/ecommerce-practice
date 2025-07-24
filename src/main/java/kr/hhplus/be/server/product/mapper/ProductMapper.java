@@ -13,5 +13,5 @@ public interface ProductMapper {
 
 
     ProductEntity domainToEntity(Product product);
-
+    Product entityToDomain(ProductEntity productEntity);
 }

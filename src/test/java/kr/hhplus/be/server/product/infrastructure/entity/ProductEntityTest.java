@@ -25,7 +25,7 @@ class ProductEntityTest {
 
     @DisplayName("상품 도메인이 엔티티에 정상적으로 매핑된다.")
     @Test
-    public void testProductEntity(){
+    public void testProductToProductEntity(){
         Product product = Product.builder()
                 .name("Test Product")
                 .description("This is a test product.")
@@ -46,6 +46,36 @@ class ProductEntityTest {
         assertEquals(product.getPrice(), mappedProductEntity.getPrice());
         assertEquals(product.getQuantity(), mappedProductEntity.getQuantity());
         assertEquals(ProductState.AVAILABLE, mappedProductEntity.getProductState());
+    }
+
+    @DisplayName("상품 엔티티가 도메인에 정상적으로 매핑된다.")
+    @Test
+    public void testProductEntityToProduct(){
+        long productId = 1L;
+        // given
+        ProductEntity productEntity = ProductEntity.builder()
+                .name("클린 아키텍처 만들면서 배우기")
+                .description("클린 아키텍처 만들면서 배우는 책!")
+                .category("IT")
+                .price(23000L)
+                .quantity(23)
+                .productState(ProductState.AVAILABLE)
+                .build();
+        productEntity.setProductId(productId);
+
+        // when
+        Product product = productMapper.entityToDomain(productEntity);
+
+        // then
+        assertNotNull(product);
+        assertEquals(productId, productEntity.getProductId());
+        assertEquals(productEntity.getName(), product.getName());
+        assertEquals(productEntity.getDescription(), product.getDescription());
+        assertEquals(productEntity.getCategory(), product.getCategory());
+        assertEquals(productEntity.getPrice(), product.getPrice());
+        assertEquals(productEntity.getQuantity(), product.getQuantity());
+        assertEquals(ProductState.AVAILABLE, product.getProductState());
+
     }
 
     @DisplayName("상품 엔티티가 영속성 컨텍스트에 잘 저장되는지 테스트한다.")
@@ -75,7 +105,4 @@ class ProductEntityTest {
         assertEquals(productEntity.getQuantity(), savedProductEntity.getQuantity());
         assertEquals(ProductState.AVAILABLE, savedProductEntity.getProductState());
     }
-
-
-
 }

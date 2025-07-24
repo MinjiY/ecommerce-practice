@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Profile;
 
 @Entity
 @Table(name = "products")
@@ -37,4 +38,9 @@ public class ProductEntity extends BaseTimeEntity {
         this.productState = productState;
     }
 
+    // for Test
+    @Profile("test")
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
 }
