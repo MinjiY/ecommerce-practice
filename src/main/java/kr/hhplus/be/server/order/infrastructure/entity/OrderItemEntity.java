@@ -26,6 +26,7 @@ public class OrderItemEntity {
     private Integer orderQuantity;
     private Long productId;
 
+
     @Builder
     public OrderItemEntity(OrderEntity order, Long userId, String productName, Long productAmount, Integer orderQuantity, Long productId) {
         this.order = order;
@@ -36,8 +37,8 @@ public class OrderItemEntity {
         this.productId = productId;
     }
 
-    @Profile("test")
-    public void setOrderEntity(OrderEntity orderEntity) {
+    public OrderItemEntity setOrderEntity(OrderEntity orderEntity) {
         this.order = orderEntity;
+        return this;
     }
 }
