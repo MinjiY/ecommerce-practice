@@ -2,9 +2,9 @@ package kr.hhplus.be.server.order.infrastructure.entity;
 
 import kr.hhplus.be.server.order.common.OrderStatus;
 import kr.hhplus.be.server.order.domain.Order;
-import kr.hhplus.be.server.order.infrastructure.repository.OrderRepository;
+import kr.hhplus.be.server.order.application.OrderRepository;
+import kr.hhplus.be.server.order.domain.OrderItem;
 import kr.hhplus.be.server.order.mapper.OrderMapper;
-import kr.hhplus.be.server.product.mapper.ProductMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -73,30 +73,37 @@ class OrderEntityTest {
     }
 
     @Test
-    @DisplayName("주문 엔티티가 주문 테이블에 정상적으로 저장된다.")
-    void testOrderEntitySave() {
-        long orderId = 1L;
+    @DisplayName("주문상품 엔티티가 도메인에 정상적으로 매핑된다.")
+    void testOrderItemEntityToOrderItem() {
         // given
+        long orderId = 100L;
         OrderEntity orderEntity = OrderEntity.builder()
                 .userId(1L)
                 .orderStatus(OrderStatus.COMPLETED)
-                .totalAmount(20000L)
-                .discountAmount(2000L)
+                .totalAmount(10000L)
+                .discountAmount(100L)
                 .build();
-        orderEntity.setOrderId(orderId);
-        when(orderRepository.save(orderEntity)).thenReturn(orderEntity);
+        orderEntity.setOrderId(orderId); // for test
+
+        OrderItemEntity orderItemEntity = OrderItemEntity.builder()
+                .productId(100L)
+                .productName("Test Product")
+                .productAmount(2000L)
+                .orderQuantity(2)
+                .build();
+        orderItemEntity.setOrderEntity(orderEntity);
 
         // when
-        OrderEntity savedOrderEntity = orderRepository.save(orderEntity);
+        OrderItem orderItem = orderMapper.entityToOrderItemDomain(orderItemEntity);
 
         // then
         assertAll(
-            () -> assertNotNull(savedOrderEntity),
-            () -> assertEquals(orderId, savedOrderEntity.getOrderId()),
-            () -> assertEquals(orderEntity.getUserId(), savedOrderEntity.getUserId()),
-            () -> assertEquals(orderEntity.getOrderStatus(), savedOrderEntity.getOrderStatus()),
-            () -> assertEquals(orderEntity.getTotalAmount(), savedOrderEntity.getTotalAmount()),
-            () -> assertEquals(orderEntity.getDiscountAmount(), savedOrderEntity.getDiscountAmount())
+            () -> assertNotNull(orderItem),
+            () -> assertEquals(orderItemEntity.getOrder().getOrderId(), orderEntity.getOrderId()),
+            () -> assertEquals(orderItemEntity.getProductId(), orderItem.getProductId()),
+            () -> assertEquals(orderItemEntity.getProductName(), orderItem.getProductName()),
+            () -> assertEquals(orderItemEntity.getProductAmount(), orderItem.getProductAmount()),
+            () -> assertEquals(orderItemEntity.getOrderQuantity(), orderItem.getOrderQuantity())
         );
     }
 
