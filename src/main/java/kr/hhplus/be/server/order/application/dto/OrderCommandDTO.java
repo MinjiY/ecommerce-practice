@@ -1,7 +1,10 @@
 package kr.hhplus.be.server.order.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import kr.hhplus.be.server.order.common.PaymentStatus;
 import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.domain.OrderItem;
+import kr.hhplus.be.server.order.domain.PaymentHistory;
 import kr.hhplus.be.server.order.mapper.OrderMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +33,15 @@ public class OrderCommandDTO {
         public CreateOrderCommand setOrderedProducts(List<CreateOrderItemCommand> orderedProducts) {
             this.orderedProducts = orderedProducts;
             return this;
+        }
+
+        public PaymentCommand toPaymentCommand() {
+            return PaymentCommand.builder()
+                    .userId(this.userId)
+                    .totalAmount(this.orderedAmount)
+                    .discountAmount(this.discountAmount)
+                    .couponId(this.isCouponUsed ? this.couponId : null)
+                    .build();
         }
 
         public Order toDomain(){
@@ -84,7 +96,7 @@ public class OrderCommandDTO {
 
     @Getter
     @Builder
-    public static class CreateOrderItemResult {
+        public static class CreateOrderItemResult {
         private Long userId;                    // 주문자
         private String productName;             // 상품명
         private Long productAmount;                     // 상품 금액
@@ -101,5 +113,51 @@ public class OrderCommandDTO {
                 .build();
         }
     }
+
+    @Builder
+    @AllArgsConstructor
+    public static class PaymentCommand {
+        private Long userId;
+        private Long totalAmount;
+        private Long discountAmount;
+        private Long couponId;
+
+        @Builder.Default
+        private PaymentStatus paymentStatus = PaymentStatus.SUCCESS;
+
+        public PaymentHistory toDomain(){
+            return PaymentHistory.builder()
+                    .userId(this.userId)
+                    .totalAmount(this.totalAmount)
+                    .discountAmount(this.discountAmount)
+                    .couponId(this.couponId)
+                    .paymentStatus(this.paymentStatus)
+                    .build();
+        }
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @Getter
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class PaymentHistoryResult {
+        private Long userId;
+        private Long totalAmount;
+        private Long discountAmount;
+        private Long couponId;
+        private PaymentStatus paymentStatus;
+
+        public static PaymentHistoryResult from(PaymentHistory paymentHistory) {
+            return PaymentHistoryResult.builder()
+                    .userId(paymentHistory.getUserId())
+                    .totalAmount(paymentHistory.getTotalAmount())
+                    .discountAmount(paymentHistory.getDiscountAmount())
+                    .couponId(paymentHistory.getPaymentStatus() == PaymentStatus.DISCOUNT ? paymentHistory.getCouponId() : null)
+                    .paymentStatus(paymentHistory.getPaymentStatus())
+                    .build();
+        }
+    }
+
+
 
 }
