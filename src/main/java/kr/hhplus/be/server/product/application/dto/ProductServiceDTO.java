@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 public class ProductServiceDTO {
 
     @Getter
@@ -26,6 +28,18 @@ public class ProductServiceDTO {
         public static ProductResult from(Product product){
             return ProductMapper.INSTANCE.toProductResponse(product);
         }
+    }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class ProductListResult {
+        private List<ProductResult> products;
+
+        public static List<ProductResult> from(List<Product> products){
+            return products.stream()
+                    .map(ProductMapper.INSTANCE::toProductResponse)
+                    .toList();
+        }
     }
 }

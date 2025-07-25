@@ -24,18 +24,16 @@ public class Product {
 
     private ProductState productState;
 
-    public void decreaseQuantity(Integer quantity) {
+    public Product decreaseQuantity(Integer quantity) {
         if (this.quantity < quantity) {
-            throw new InsufficientStockException(
-                    ExceptionCode.INVALID_INPUT_VALUE,
-                    "Insufficient stock for product: " + this.name + ". Requested: " + quantity + ", Available: " + this.quantity
-            );
+            throw new InsufficientStockException(ExceptionCode.INVALID_INPUT_VALUE);
         }
         this.quantity -= quantity;
 
         if( this.quantity == 0) {
             setProductStateSoldOut();
         }
+        return this;
     }
 
     public void setProductStateSoldOut() {
