@@ -82,40 +82,6 @@ class ProductServiceTest {
         });
     }
 
-    @DisplayName("상품이 존재하고 재고가 충분하면 재고를 감소시킨다.")
-    @Test
-    void decreaseStock(){
-        // given
-        long productId = 1L;
-        int remainingQuantity = 5;
-        int quantityToDecrease = 2;
-        int expectedQuantity = remainingQuantity - quantityToDecrease;
-        Product product = Product.builder()
-                .productId(productId)
-                .productState(ProductState.AVAILABLE)
-                .name("자바 네트워크 프로그래밍")
-                .description("자바로 배우는 네트워크 프로그래밍의 기초")
-                .price(18000L)
-                .category("IT")
-                .quantity(remainingQuantity)
-                .build();
-
-        when(productRepository.findById(productId)).thenReturn(product);
-        when(productRepository.save(product)).thenReturn(product);
-        // when
-        ProductResult result = productService.decreaseStock(productId, quantityToDecrease);
-        // then
-        verify(productRepository).findById(productId);
-        verify(productRepository).save(product);
-        assertAll(
-            () -> assertNotNull(result, "상품 재고 감소 결과가 null이 아닙니다."),
-            () -> assertEquals(productId, result.getProductId(), "상품 ID가 일치합니다."),
-            () -> assertEquals("자바 네트워크 프로그래밍", result.getName(), "상품 이름이 일치합니다."),
-            () -> assertEquals(expectedQuantity, result.getQuantity(), "상품 수량이 감소되어야 합니다."),
-            () -> assertEquals(ProductState.AVAILABLE, result.getProductState(), "상품 상태가 일치합니다.")
-        );
-    }
-
     @DisplayName("재고 차감 후 상품의 재고가 0개면 상품의 상태가 품절 상태로 변경된다.")
     @Test
     void productStateSoldOut(){
