@@ -10,6 +10,15 @@
 👉🏻[Swagger-UI](https://github.com/MinjiY/ecommerce-practice/blob/step04/specification.md#2-swagger-ui)
 
 ---
+## 📖 시나리오
+### 주문 시나리오
+사용자는 상품을 선택하여 주문을 위해 주문서 작성으로 넘어간다.
+주문서 작성중에 쿠폰을 사용하고 싶다면 모달을 띄워 현재 사용 가능한 쿠폰을 조회한다, 사용 가능한 쿠폰은 여러개일 수 있다.
+사용 가능한 쿠폰을 확인하고 리스트 중 사용할 쿠폰을 선택해서 현재 결제 금액에 할인된 금액을 적용한다.
+결제를 위해서는 충전된 금액이 있어야 하며, 충전된 금액이 부족하면 결제를 할 수 없다.
+결제 금액이 충전된 금액보다 크면 결제할 수 없다는 메시지를 띄운다.
+
+
 ## 📄 요구사항 정의
 ### 기능 요구사항
 - 사용자는 결제에 사용될 금액을 충전한다.
@@ -96,107 +105,105 @@
 ## 👩‍💻 ERD 설계
 [DDL 파일](https://github.com/MinjiY/ecommerce-practice/blob/step03/ddl.sql)
 ![image/erd.png](image/erd.png)   
+- 하나의 쿠폰을 여러 사용자가 발급받을 수 있다.
+- 한명의 사용자는 여러 쿠폰을 발급받을 수 있다.   
+=> `MAP_USER_COUPON` 테이블을 통해 다대다 관계를 표현한다.
+- 하나의 쿠폰 정책을 여러 쿠폰이 가질 수 있다.   
+=> ex) 1월 30% 할인 쿠폰, 선착순 30% 할인쿠폰
+
 
 <details><summary> DDL </summary>
 
 ```sql
 CREATE TABLE USERS
 (
-    USER_ID  BIGINT AUTO_INCREMENT PRIMARY KEY,
-    ACCOUNTS VARCHAR(30) NOT NULL
+  USER_ID  BIGINT AUTO_INCREMENT PRIMARY KEY,
+  ACCOUNTS VARCHAR(30) NOT NULL
 );
 CREATE TABLE COUPONS
 (
-    COUPON_ID        BIGINT AUTO_INCREMENT PRIMARY KEY,
-    COUPON_POLICY_ID BIGINT      UNIQUE NOT NULL,
-    COUPON_STATE     VARCHAR(20) NOT NULL,
-    FOREIGN KEY (COUPON_POLICY_ID) REFERENCES COUPON_POLICIES(COUPON_POLICY_ID)
-);
-CREATE TABLE COUPON_POLICIES
-(
-    COUPON_POLICY_ID   BIGINT AUTO_INCREMENT PRIMARY KEY,
-    EXPIRATION_DAYS    INT         NOT NULL,
-    COUPON_ID          BIGINT      NOT NULL,
-    COUPON_TYPE        VARCHAR(20) NOT NULL,
-    ISSUABLE_QUANTITY  INT         NOT NULL,
-    REMAINING_QUANTITY INT         NOT NULL,
-    DISCOUNT_RATE      DECIMAL(5, 2),
-    DISCOUNT_AMOUNT    INT
+  COUPON_ID          BIGINT AUTO_INCREMENT PRIMARY KEY,
+  COUPON_CODE        VARCHAR(50) NOT NULL,
+  COUPON_STATE       VARCHAR(20) NOT NULL, -- ACTIVE, USED, EXPIRED
+  EXPIRATION_DAYS    INT         NOT NULL,
+  ISSUABLE_QUANTITY  INT         NOT NULL,
+  REMAINING_QUANTITY INT         NOT NULL,
+  DISCOUNT_RATE      DECIMAL(5, 2)
 );
 CREATE TABLE MAP_USER_COUPON
 (
-    USER_ID   BIGINT NOT NULL,
-    COUPON_ID BIGINT NOT NULL,
-    PRIMARY KEY (USER_ID, COUPON_ID),
-    FOREIGN KEY (USER_ID) REFERENCES USERS (USER_ID),
-    FOREIGN KEY (COUPON_ID) REFERENCES COUPONS (COUPON_ID)
+  USER_ID   BIGINT NOT NULL,
+  COUPON_ID BIGINT NOT NULL,
+  PRIMARY KEY (USER_ID, COUPON_ID),
+  FOREIGN KEY (USER_ID) REFERENCES USERS (USER_ID),
+  FOREIGN KEY (COUPON_ID) REFERENCES COUPONS (COUPON_ID)
 );
 CREATE TABLE ORDERS
 (
-    ORDER_ID        BIGINT AUTO_INCREMENT PRIMARY KEY,
-    USER_ID         BIGINT      NOT NULL,
-    ORDER_STATUS    VARCHAR(20) NOT NULL,
-    TOTAL_AMOUNT    BIGINT      NOT NULL,
-    DISCOUNT_AMOUNT BIGINT      NOT NULL,
-    ORDERED_AT      TIMESTAMP   NOT NULL,
-    UPDATED_AT      TIMESTAMP   NOT NULL
+  ORDER_ID        BIGINT AUTO_INCREMENT PRIMARY KEY,
+  USER_ID         BIGINT      NOT NULL,
+  ORDER_STATUS    VARCHAR(20) NOT NULL, -- PENDING, COMPLETED, CANCELED
+  TOTAL_AMOUNT    BIGINT      NOT NULL,
+  DISCOUNT_AMOUNT BIGINT      NOT NULL,
+  PAYMENT_HISTORY_ID BIGINT   NOT NULL,
+  CREATED_AT      TIMESTAMP   NOT NULL,
+  UPDATED_AT      TIMESTAMP   NOT NULL
 );
 CREATE TABLE ORDER_ITEMS
 (
-    ORDER_ITEM_ID  BIGINT AUTO_INCREMENT PRIMARY KEY,
-    ORDER_ID       BIGINT       NOT NULL,
-    USER_ID        BIGINT       NOT NULL,
-    PRODUCT_NAME   VARCHAR(255) NOT NULL,
-    PRODUCT_AMOUNT BIGINT       NOT NULL,
-    ORDER_QUANTITY INT          NOT NULL,
-    PRODUCT_ID     BIGINT       NOT NULL,
-    FOREIGN KEY (ORDER_ID) REFERENCES ORDERS (ORDER_ID)
+  ORDER_ITEM_ID  BIGINT AUTO_INCREMENT PRIMARY KEY,
+  ORDER_ID       BIGINT       NOT NULL,
+  USER_ID        BIGINT       NOT NULL,
+  PRODUCT_NAME   VARCHAR(255) NOT NULL,
+  PRODUCT_AMOUNT BIGINT       NOT NULL,
+  ORDER_QUANTITY INT          NOT NULL,
+  PRODUCT_ID     BIGINT       NOT NULL,
+  FOREIGN KEY (ORDER_ID) REFERENCES ORDERS (ORDER_ID)
 );
 CREATE TABLE PAYMENT_HISTORY
 (
-    PAYMENT_HISTORY_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
-    ORDER_ID           BIGINT      NOT NULL,
-    USER_ID            BIGINT      NOT NULL,
-    AMOUNT             BIGINT      NOT NULL,
-    DISCOUNT_AMOUNT    BIGINT      NOT NULL,
-    COUPON_ID          BIGINT,
-    PAYMENT_STATUS     VARCHAR(20) NOT NULL, -- SUCCESS, FAILED, CANCELED
-    REQUESTED_AT       TIMESTAMP   NOT NULL,
-    UPDATED_AT         TIMESTAMP   NOT NULL,
-    FOREIGN KEY (ORDER_ID) REFERENCES ORDERS (ORDER_ID)
+  PAYMENT_HISTORY_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+  USER_ID            BIGINT      NOT NULL,
+  AMOUNT             BIGINT      NOT NULL,
+  DISCOUNT_AMOUNT    BIGINT      NOT NULL,
+  COUPON_ID          BIGINT,
+  PAYMENT_STATUS     VARCHAR(20) NOT NULL, -- SUCCESS, FAILED, CANCELED
+  CREATED_AT         TIMESTAMP   NOT NULL,
+  UPDATED_AT         TIMESTAMP   NOT NULL,
+  FOREIGN KEY (ORDER_ID) REFERENCES ORDERS (ORDER_ID)
 );
 CREATE TABLE PRODUCTS
 (
-    PRODUCT_ID    BIGINT AUTO_INCREMENT PRIMARY KEY,
-    NAME          VARCHAR(255) NOT NULL,
-    DESCRIPTION   TEXT         NOT NULL,
-    CATEGORY      VARCHAR(20)  NOT NULL, --
-    PRICE         BIGINT       NOT NULL,
-    REGISTERED_AT TIMESTAMP    NOT NULL,
-    UPDATED_AT    TIMESTAMP    NOT NULL,
-    QUANTITY      INT          NOT NULL,
-    STATES        VARCHAR(20)  NOT NULL  -- AVAILABLE, SOLD_OUT
+  PRODUCT_ID    BIGINT AUTO_INCREMENT PRIMARY KEY,
+  NAME          VARCHAR(255) NOT NULL,
+  DESCRIPTION   TEXT         NOT NULL,
+  CATEGORY      VARCHAR(20)  NOT NULL, --
+  PRICE         BIGINT       NOT NULL,
+  CREATED_AT    TIMESTAMP    NOT NULL,
+  UPDATED_AT    TIMESTAMP    NOT NULL,
+  QUANTITY      INT          NOT NULL,
+  PRODUCT_STATE        VARCHAR(20)  NOT NULL  -- AVAILABLE, SOLD_OUT
 );
-CREATE TABLE PAY_MONEY
+CREATE TABLE POINT
 (
-    PAY_MONEY_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
-    BALANCE      BIGINT NOT NULL,
-    USER_ID      BIGINT NOT NULL
+  POINT_ID     BIGINT AUTO_INCREMENT PRIMARY KEY,
+  BALANCE      BIGINT NOT NULL,
+  USER_ID      BIGINT NOT NULL
 );
-CREATE TABLE PAY_MONEY_HISTORY
+CREATE TABLE POINT_HISTORY
 (
-    PAY_MONEY_HISTORY_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
-    USER_ID              BIGINT      NOT NULL,
-    PAY_MONEY_ID         BIGINT      NOT NULL,
-    AMOUNT               BIGINT      NOT NULL,
-    TRANSACTION_TYPE     VARCHAR(20) NOT NULL, -- DEPOSIT, WITHDRAW
-    REQUESTED_AT         TIMESTAMP   NOT NULL,
-    UPDATED_AT           TIMESTAMP   NOT NULL,
-    FOREIGN KEY (PAY_MONEY_ID) REFERENCES PAY_MONEY (PAY_MONEY_ID)
+  POINT_HISTORY_ID     BIGINT AUTO_INCREMENT PRIMARY KEY,
+  USER_ID              BIGINT      NOT NULL,
+  POINT_ID             BIGINT      NOT NULL,
+  AMOUNT               BIGINT      NOT NULL,
+  TRANSACTION_TYPE     VARCHAR(20) NOT NULL, -- DEPOSIT, WITHDRAW
+  CREATED_AT           TIMESTAMP   NOT NULL,
+  UPDATED_AT           TIMESTAMP   NOT NULL,
+  FOREIGN KEY (POINT_ID) REFERENCES POINT (POINT_ID)
 );
+```
 
 </details>
-
 ---
 
 ## 💎 Mock API
