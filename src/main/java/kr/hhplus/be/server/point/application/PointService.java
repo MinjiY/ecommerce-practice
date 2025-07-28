@@ -31,5 +31,11 @@ public class PointService {
         return PointCommandDTO.ChargePointResult.from(savedPoint);
     }
 
+    public PointCommandDTO.GetUserPointResult getUserPoint(Long userId){
+        final long findUserId = userId;
+        Point userPoint = pointRepository.findByUserId(findUserId);
+        return PointCommandDTO.GetUserPointResult.from(userPoint);
+    }
+
 
 }

@@ -37,4 +37,20 @@ public class PointCommandDTO {
         }
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class GetUserPointResult {
+        private Long pointId;
+        private Long balance;
+        private Long userId;
+        public static GetUserPointResult from(Point point) {
+            return GetUserPointResult.builder()
+                    .pointId(point.getPointId())
+                    .balance(point.getBalance())
+                    .userId(point.getUserId())
+                    .build();
+        }
+    }
+
 }

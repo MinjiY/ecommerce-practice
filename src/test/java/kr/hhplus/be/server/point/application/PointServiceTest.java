@@ -126,5 +126,32 @@ class PointServiceTest {
         verify(pointHistoryRepository).save(any(PointHistory.class));
     }
 
+    @DisplayName("사용자의 포인트 정보를 조회한다.")
+    @Test
+    void getUserPoint() {
+        // given
+        long userId = 123L;
+        Point expectedPoint = Point.builder()
+                .userId(userId)
+                .balance(1000L)
+                .build();
+
+        when(pointRepository.findByUserId(userId)).thenAnswer(invocationOnMock -> {
+            Long findUserId = invocationOnMock.getArgument(0);
+            if (findUserId.equals(expectedPoint.getUserId())) {
+                return expectedPoint;
+            }
+            return Point.builder().userId(findUserId).balance(0L).build();
+        });
+
+        // when
+        PointCommandDTO.GetUserPointResult result = pointService.getUserPoint(userId);
+
+        // then
+        assertNotNull(result);
+        assertEquals(expectedPoint.getUserId(), result.getUserId());
+        assertEquals(expectedPoint.getBalance(), result.getBalance());
+    }
+
 
 }
