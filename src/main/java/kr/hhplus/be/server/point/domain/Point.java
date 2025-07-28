@@ -2,6 +2,7 @@ package kr.hhplus.be.server.point.domain;
 
 import kr.hhplus.be.server.exception.ExceptionCode;
 import kr.hhplus.be.server.exception.custom.InvalidChargeAmountException;
+import kr.hhplus.be.server.exception.custom.InvalidWithdrawAmountException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -31,4 +32,15 @@ public class Point {
         }
         this.balance += chargeAmount;
     }
+
+    public void withdrawAmount(Long withdrawAmount) {
+        if (withdrawAmount <= 0) {
+            throw new InvalidWithdrawAmountException(ExceptionCode.INVALID_WITHDRAW_AMOUNT, "사용 금액은 양수여야 합니다.");
+        }
+        if (this.balance < withdrawAmount) {
+            throw new InvalidWithdrawAmountException(ExceptionCode.INVALID_WITHDRAW_AMOUNT, "잔액이 부족합니다.");
+        }
+        this.balance -= withdrawAmount;
+    }
+
 }

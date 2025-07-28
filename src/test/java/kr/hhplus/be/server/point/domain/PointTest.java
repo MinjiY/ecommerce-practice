@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.point.domain;
 
 import kr.hhplus.be.server.exception.custom.InvalidChargeAmountException;
+import kr.hhplus.be.server.exception.custom.InvalidWithdrawAmountException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -39,4 +40,20 @@ class PointTest {
             point.chargeAmount(-500L);
         });
     }
+
+    @DisplayName("사용 금액이 잔액보다 클 경우 InvalidWithdrawAmount 예외가 발생해야 한다.")
+    @Test
+    void withdrawAmountTest() {
+        // given
+        Point point = Point.builder()
+                .balance(1000L)
+                .userId(1L)
+                .build();
+
+        assertThrows(InvalidWithdrawAmountException.class, () -> {
+            // when
+            point.withdrawAmount(1500L);
+        });
+    }
+
 }
