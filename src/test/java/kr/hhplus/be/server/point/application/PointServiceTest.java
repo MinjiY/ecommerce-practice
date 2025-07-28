@@ -153,5 +153,39 @@ class PointServiceTest {
         assertEquals(expectedPoint.getBalance(), result.getBalance());
     }
 
+    @DisplayName("포인트 사용 요청에 amount 만큼 차감된 포인트를 반환해야한다.")
+    @Test
+    void withdrawPoint() {
+        // given
+        long userId = 123L;
+        long withdrawAmount = 500L;
 
+        PointCommandDTO.withdrawPointCommand command = PointCommandDTO.withdrawPointCommand.builder()
+                .userId(userId)
+                .amount(withdrawAmount)
+                .build();
+
+        Point initialPoint = Point.builder()
+                .userId(userId)
+                .balance(1000L)
+                .build();
+
+        Point expectedPoint = Point.builder()
+                .userId(userId)
+                .balance(500L)
+                .build();
+
+        when(pointRepository.findByUserId(userId)).thenReturn(initialPoint);
+        when(pointRepository.save(any(Point.class))).thenReturn(expectedPoint);
+
+        // when
+        PointCommandDTO.WithDrawPointResult result = pointService.withdrawPoint(command);
+
+        // then
+        verify(pointRepository).findByUserId(userId);
+        verify(pointRepository).save(any(Point.class));
+        assertNotNull(result);
+        assertThat(result.getBalance()).isEqualTo(expectedPoint.getBalance());
+        assertThat(result.getUserId()).isEqualTo(expectedPoint.getUserId());
+    }
 }
