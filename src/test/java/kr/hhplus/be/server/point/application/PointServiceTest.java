@@ -184,6 +184,7 @@ class PointServiceTest {
         // then
         verify(pointRepository).findByUserId(userId);
         verify(pointRepository).save(any(Point.class));
+        verify(pointHistoryRepository).save(any(PointHistory.class));
         assertNotNull(result);
         assertThat(result.getBalance()).isEqualTo(expectedPoint.getBalance());
         assertThat(result.getUserId()).isEqualTo(expectedPoint.getUserId());

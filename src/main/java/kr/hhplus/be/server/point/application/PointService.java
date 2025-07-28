@@ -37,5 +37,21 @@ public class PointService {
         return PointCommandDTO.GetUserPointResult.from(userPoint);
     }
 
+    public PointCommandDTO.WithDrawPointResult withdrawPoint(PointCommandDTO.withdrawPointCommand withdrawPointCommand) {
+        // Point 테이블의 유저의 row가 없으면 0포인트로 간주
+        Point userPoint = pointRepository.findByUserId(withdrawPointCommand.getUserId());
+        userPoint.withdrawAmount(withdrawPointCommand.getAmount());
+        Point savedPoint = pointRepository.save(userPoint);
+        pointHistoryRepository.save(
+                PointHistory.builder()
+                        .pointId(savedPoint.getPointId())
+                        .userId(savedPoint.getUserId())
+                        .amount(withdrawPointCommand.getAmount())
+                        .transactionType(TransactionType.WITHDRAW)
+                        .build()
+        );
+        return PointCommandDTO.WithDrawPointResult.from(savedPoint);
+    }
+
 
 }
