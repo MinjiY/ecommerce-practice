@@ -56,4 +56,19 @@ class PointTest {
         });
     }
 
+    @DisplayName("사용 금액이 0일 경우 InvalidWithdrawAmount 예외가 발생해야 한다.")
+    @Test
+    void withdrawAmountZero() {
+        // given
+        Point point = Point.builder()
+                .balance(1000L)
+                .userId(1L)
+                .build();
+
+        assertThrows(InvalidWithdrawAmountException.class, () -> {
+            // when
+            point.withdrawAmount(0L);
+        });
+    }
+
 }
