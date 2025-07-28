@@ -20,4 +20,11 @@ public class PointRepositoryImpl implements PointRepository {
         return pointMapper.entityDomain(pointRepository.save(pointEntity));
     }
 
+    @Override
+    public Point findByUserId(Long userId){
+        PointEntity pointEntity = pointRepository.findByUserId(userId)
+                .orElse(new PointEntity(0L, userId));
+        return pointMapper.entityDomain(pointEntity);
+    }
+
 }

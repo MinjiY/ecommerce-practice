@@ -4,5 +4,5 @@ import kr.hhplus.be.server.point.domain.Point;
 
 public interface PointRepository {
     Point save(Point point);
-
+    Point findByUserId(Long userId);
 }

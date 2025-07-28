@@ -14,8 +14,9 @@ public class PointService {
 
     public PointCommandDTO.chargePointResult chargePoint(PointCommandDTO.chargePointCommand chargePointCommand) {
         // 요청 유저에 대한 data row 가 없으면 새로 생성
-        Point point = pointRepository.save(chargePointCommand.toDomain());
-        return PointCommandDTO.chargePointResult.from(point);
+        Point userPoint = pointRepository.findByUserId(chargePointCommand.getUserId());
+        userPoint.chargeAmount(chargePointCommand.getAmount());
+        return PointCommandDTO.chargePointResult.from(pointRepository.save(userPoint));
     }
 
 
