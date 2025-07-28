@@ -1,19 +1,14 @@
 package kr.hhplus.be.server.point.application;
 
-import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.point.application.dto.PointCommandDTO;
 import kr.hhplus.be.server.point.domain.Point;
 import kr.hhplus.be.server.point.domain.PointHistory;
-import kr.hhplus.be.server.point.infrastructure.entity.PointEntity;
-import kr.hhplus.be.server.point.infrastructure.repository.PointJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +48,7 @@ class PointServiceTest {
         // when
         when(pointRepository.save(any(Point.class))).thenReturn(expectedPoint);
 
-        PointCommandDTO.chargePointResult result = pointService.chargePoint(command);
+        PointCommandDTO.ChargePointResult result = pointService.chargePoint(command);
 
         // then
         assertNotNull(result);
@@ -86,7 +81,7 @@ class PointServiceTest {
                 .userId(userId)
                 .amount(chargeAmount)
                 .build();
-        PointCommandDTO.chargePointResult result = pointService.chargePoint(command);
+        PointCommandDTO.ChargePointResult result = pointService.chargePoint(command);
 
         // then
         verify(pointRepository).findByUserId(userId);

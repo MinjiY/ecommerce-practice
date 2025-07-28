@@ -23,13 +23,13 @@ public class PointCommandDTO {
     @Getter
     @Builder
     @AllArgsConstructor
-    public static class chargePointResult {
+    public static class ChargePointResult {
         private Long pointId;
         private Long balance;
         private Long userId;
 
-        public static chargePointResult from(Point point) {
-            return chargePointResult.builder()
+        public static ChargePointResult from(Point point) {
+            return ChargePointResult.builder()
                     .pointId(point.getPointId())
                     .balance(point.getBalance())
                     .userId(point.getUserId())

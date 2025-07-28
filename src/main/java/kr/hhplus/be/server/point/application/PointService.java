@@ -15,7 +15,7 @@ public class PointService {
     private PointRepository pointRepository;
     private PointHistoryRepository pointHistoryRepository;
 
-    public PointCommandDTO.chargePointResult chargePoint(PointCommandDTO.chargePointCommand chargePointCommand) {
+    public PointCommandDTO.ChargePointResult chargePoint(PointCommandDTO.chargePointCommand chargePointCommand) {
         // 요청 유저에 대한 data row 가 없으면 새로 생성
         Point userPoint = pointRepository.findByUserId(chargePointCommand.getUserId());
         userPoint.chargeAmount(chargePointCommand.getAmount());
@@ -28,7 +28,7 @@ public class PointService {
                         .transactionType(TransactionType.DEPOSIT)
                         .build()
         );
-        return PointCommandDTO.chargePointResult.from(savedPoint);
+        return PointCommandDTO.ChargePointResult.from(savedPoint);
     }
 
 
