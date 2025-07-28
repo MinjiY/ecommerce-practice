@@ -9,6 +9,7 @@ import lombok.Getter;
 public class PointCommandDTO {
 
     // amount를 음수로 요청하는 것은 RequestBody에서 validation 처리한다.
+    @Getter
     @Builder
     public static class chargePointCommand {
         private Long userId;
