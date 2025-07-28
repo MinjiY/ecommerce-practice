@@ -19,6 +19,7 @@ public interface PointMapper {
     PointEntity domainToEntity(Point point);
 
     Point dtoToDomain(PointCommandDTO.chargePointCommand chargePointCommand);
+    Point dtoToDomain(PointCommandDTO.withdrawPointCommand withdrawPointCommand);
 
 
     PointCommandDTO.chargePointCommand toChargePointCommand(RequestChargeDTO requestChargeDTO);

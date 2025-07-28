@@ -53,4 +53,33 @@ public class PointCommandDTO {
         }
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class withdrawPointCommand {
+        private Long userId;
+        private Long amount;
+
+        public Point toDomain() {
+            return PointMapper.INSTANCE.dtoToDomain(this);
+        }
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class WithDrawPointResult {
+        private Long pointId;
+        private Long balance;
+        private Long userId;
+
+        public static WithDrawPointResult from(Point point) {
+            return WithDrawPointResult.builder()
+                    .pointId(point.getPointId())
+                    .balance(point.getBalance())
+                    .userId(point.getUserId())
+                    .build();
+        }
+
+    }
 }
