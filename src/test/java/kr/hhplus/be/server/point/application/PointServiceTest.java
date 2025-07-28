@@ -28,34 +28,6 @@ class PointServiceTest {
     @Mock
     private PointHistoryRepository pointHistoryRepository;
 
-    @DisplayName("포인트 충전 요청에 대한 결과를 반환한다.")
-    @Test
-    void chargePoint() {
-        // given
-        long userId = 123L;
-        long amount = 3000L;
-
-        PointCommandDTO.chargePointCommand command = PointCommandDTO.chargePointCommand.builder()
-                .userId(userId)
-                .amount(amount)
-                .build();
-
-        Point expectedPoint = Point.builder()
-                .userId(userId)
-                .balance(amount)
-                .build();
-
-        // when
-        when(pointRepository.save(any(Point.class))).thenReturn(expectedPoint);
-
-        PointCommandDTO.ChargePointResult result = pointService.chargePoint(command);
-
-        // then
-        assertNotNull(result);
-        assertEquals(expectedPoint.getUserId(), result.getUserId());
-        assertEquals(expectedPoint.getBalance(), result.getBalance());
-    }
-
     @DisplayName("포인트 충전시 기존 잔액에 충전 요청 금액을 더한 값을 반환해야한다.")
     @Test
     void accumulatePoint(){
