@@ -19,10 +19,9 @@ public enum ExceptionCode {
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "Resource Not Found"),
     INSUFFICIENT_STOCK(HttpStatus.BAD_REQUEST, "R002", "Insufficient Stock"),
     ORDERE_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "R003", "Ordered Amount Mismatch"),
-
+    INVALID_CHARGE_AMOUNT(HttpStatus.BAD_REQUEST, "R004", "Invalid Charge Amount"),
+    INVALID_WITHDRAW_AMOUNT(HttpStatus.BAD_REQUEST, "R005", "Invalid Withdraw Amount"),
     REQUEST_FAILED(HttpStatus.BAD_REQUEST, "P001", "Request Failed");
-
-    // Custom Exception
 
     private final HttpStatus status;
     private final String code;
