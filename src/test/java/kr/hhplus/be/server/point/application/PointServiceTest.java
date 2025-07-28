@@ -3,6 +3,7 @@ package kr.hhplus.be.server.point.application;
 import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.point.application.dto.PointCommandDTO;
 import kr.hhplus.be.server.point.domain.Point;
+import kr.hhplus.be.server.point.domain.PointHistory;
 import kr.hhplus.be.server.point.infrastructure.entity.PointEntity;
 import kr.hhplus.be.server.point.infrastructure.repository.PointJpaRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +29,9 @@ class PointServiceTest {
 
     @Mock
     private PointRepository pointRepository;
+
+    @Mock
+    private PointHistoryRepository pointHistoryRepository;
 
     @DisplayName("포인트 충전 요청에 대한 결과를 반환한다.")
     @Test
@@ -91,5 +95,41 @@ class PointServiceTest {
         assertThat(result.getBalance()).isEqualTo(expectedBalance);
         assertThat(result.getUserId()).isEqualTo(userId);
     }
+
+    @DisplayName("포인트 충전시 충전 내역을 기록해야한다.")
+    @Test
+    void recordPointHistory() {
+        // given
+        long userId = 123L;
+        long chargeAmount = 500L;
+        long expectedBalance = 500L;
+
+        PointCommandDTO.chargePointCommand command = PointCommandDTO.chargePointCommand.builder()
+                .userId(userId)
+                .amount(chargeAmount)
+                .build();
+
+        Point initialPoint = Point.builder()
+                .userId(userId)
+                .balance(0L)
+                .build();
+
+        Point expectedPoint = Point.builder()
+                .userId(userId)
+                .balance(expectedBalance)
+                .build();
+
+        when(pointRepository.findByUserId(userId)).thenReturn(initialPoint);
+        when(pointRepository.save(any(Point.class))).thenReturn(expectedPoint);
+
+        // when
+        pointService.chargePoint(command);
+
+        // then
+        verify(pointRepository).findByUserId(userId);
+        verify(pointRepository).save(any(Point.class));
+        verify(pointHistoryRepository).save(any(PointHistory.class));
+    }
+
 
 }
