@@ -3,7 +3,6 @@ package kr.hhplus.be.server.order.domain;
 import kr.hhplus.be.server.exception.ExceptionCode;
 import kr.hhplus.be.server.exception.custom.OrderAmountMismatchException;
 import kr.hhplus.be.server.order.common.PaymentStatus;
-import kr.hhplus.be.server.order.infrastructure.entity.OrderEntity;
 import kr.hhplus.be.server.order.infrastructure.entity.PaymentHistoryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

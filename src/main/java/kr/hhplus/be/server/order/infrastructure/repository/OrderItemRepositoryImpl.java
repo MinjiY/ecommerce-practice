@@ -3,7 +3,6 @@ package kr.hhplus.be.server.order.infrastructure.repository;
 import kr.hhplus.be.server.order.application.OrderItemRepository;
 import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.domain.OrderItem;
-import kr.hhplus.be.server.order.infrastructure.entity.OrderEntity;
 import kr.hhplus.be.server.order.infrastructure.entity.OrderItemEntity;
 import kr.hhplus.be.server.order.mapper.OrderMapper;
 import lombok.RequiredArgsConstructor;
