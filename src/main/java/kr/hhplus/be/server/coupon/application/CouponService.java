@@ -25,5 +25,14 @@ public class CouponService {
         return CouponCommandDTO.GetAvailableCouponsResult.from(findUserId, mapUserCoupons);
     }
 
+    public CouponCommandDTO.canceledCouponResult cancelCoupon(CouponCommandDTO.cancelCouponCommand cancelCouponCommand) {
+        MapUserCoupon foundMapUserCoupon = couponRepository.findByUserIdAndCouponId(MapUserCoupon.builder()
+                .userId(cancelCouponCommand.getUserId())
+                .couponId(cancelCouponCommand.getCouponId())
+                .build());
+        foundMapUserCoupon.cancelCoupon();
+        MapUserCoupon canceledCoupon = couponRepository.save(foundMapUserCoupon);
+        return CouponCommandDTO.canceledCouponResult.from(canceledCoupon);
+    }
 
 }

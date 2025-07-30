@@ -11,5 +11,9 @@ public interface CouponMapper {
     CouponMapper INSTANCE = Mappers.getMapper(CouponMapper.class);
 
     MapUserCoupon entityToMapUserCouponDomain(MapUserCouponEntity mapUserCouponEntity);
+
     MapUserCoupon entityToMapUserCouponDomainWithoutUserId(MapUserCouponEntity mapUserCouponEntity);
+
+    MapUserCouponEntity domainToMapUserCouponEntity(MapUserCoupon mapUserCoupon);
+
 }

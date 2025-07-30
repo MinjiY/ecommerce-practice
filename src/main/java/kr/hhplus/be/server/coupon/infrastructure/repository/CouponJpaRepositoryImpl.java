@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface CouponJpaRepositoryImpl extends JpaRepository<MapUserCouponEntity, MapUserCouponId> {
 
     List<MapUserCouponEntity> findAllByUserIdAndCouponState(Long userId, String couponState);
+
+    Optional<MapUserCouponEntity> findByUserIdAndCouponId(Long userId, Long couponId);
 }
