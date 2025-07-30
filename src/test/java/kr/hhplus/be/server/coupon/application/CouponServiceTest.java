@@ -57,4 +57,29 @@ class CouponServiceTest {
         assertThat(result.getAvailableCoupons().get(1).getCouponId(), is(expectedCoupons.get(1).getCouponId()));
         assertThat(result.getAvailableCoupons().get(1).getCouponName(), is(expectedCoupons.get(1).getCouponName()));
     }
+
+    @DisplayName("유저의 사용 가능한 쿠폰이 없을때에 빈 리스트를 반환한다.")
+    @Test
+    void getAvailableCouponsEmptyList() {
+        // given
+        Long userId = 123L;
+
+        List<MapUserCoupon> expectedCoupons = List.of();
+
+        when(couponRepository.findAvailableCouponsByUserIdAndCouponState(
+                any(MapUserCoupon.class)
+        )).thenReturn(expectedCoupons);
+
+        // when
+        CouponCommandDTO.GetAvailableCouponsResult result = couponService.getAvailableCoupons(userId);
+
+        // then
+        verify(couponRepository).findAvailableCouponsByUserIdAndCouponState(
+                any(MapUserCoupon.class)
+        );
+        assertNotNull(result);
+        assertThat(result.getUserId(), is(userId));
+        assertThat(result.getNumberOfAvailableCoupons(), is(expectedCoupons.size()));
+        assertTrue(result.getAvailableCoupons().isEmpty(), "Available coupons should be empty");
+   }
 }
