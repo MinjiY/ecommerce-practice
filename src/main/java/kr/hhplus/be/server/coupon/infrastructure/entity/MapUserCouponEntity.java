@@ -26,6 +26,8 @@ public class MapUserCouponEntity {
     @Enumerated(EnumType.STRING)
     private CouponState couponState;
 
+    private String couponName;
+
 
     @Builder
     public MapUserCouponEntity(UserEntity user, CouponEntity coupon) {

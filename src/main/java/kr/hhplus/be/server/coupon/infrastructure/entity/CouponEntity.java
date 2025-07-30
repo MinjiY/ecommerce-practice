@@ -19,8 +19,6 @@ public class CouponEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long couponId;
 
-    private String couponName;
-
     private LocalDate expirationDate;
 
     private Integer issuableQuantity;
