@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "coupon")
@@ -18,17 +19,15 @@ public class CouponEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long couponId;
 
-    private String couponCode;
+    private String couponName;
 
-    @Enumerated(EnumType.STRING)
-    private CouponState couponState;
-
-    private Integer expirationDays;
+    private LocalDate expirationDate;
 
     private Integer issuableQuantity;
 
     private Integer remainingQuantity;
 
     private BigDecimal discountRate;
+
 
 }
