@@ -87,6 +87,7 @@ class OrderServiceTest {
                 .userId(userId)
                 .orderId(orderId)
                 .totalAmount(productTotalAmount)
+                .paidAmount(productTotalAmount)
                 .build();
         List<OrderItem> orderItems = List.of(
                 OrderItem.builder()

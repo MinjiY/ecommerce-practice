@@ -20,16 +20,18 @@ public class PaymentHistoryEntity extends BaseTimeEntity {
     private Long userId;
     private Long totalAmount;
     private Long discountAmount;
+    private Long paidAmount;
     private Long couponId;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
     @Builder
-    public PaymentHistoryEntity(Long userId, Long totalAmount, Long discountAmount, Long couponId, PaymentStatus paymentStatus) {
+    public PaymentHistoryEntity(Long userId, Long totalAmount, Long discountAmount,Long paidAmount, Long couponId, PaymentStatus paymentStatus) {
         this.userId = userId;
         this.totalAmount = totalAmount;
         this.discountAmount = discountAmount;
+        this.paidAmount = paidAmount;
         this.couponId = couponId;
         this.paymentStatus = paymentStatus;
     }

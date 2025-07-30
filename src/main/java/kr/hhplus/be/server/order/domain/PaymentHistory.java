@@ -23,6 +23,7 @@ public class PaymentHistory {
     private Long totalAmount;
     @Builder.Default
     private Long discountAmount = 0L;
+    private Long paidAmount;
     private Long couponId;
 
     @Builder.Default
@@ -39,6 +40,7 @@ public class PaymentHistory {
                 .totalAmount(this.totalAmount)
                 .paymentStatus(this.paymentStatus)
                 .discountAmount(this.discountAmount)
+                .paidAmount(this.paidAmount)
                 .couponId(this.couponId)
                 .build();
     }
