@@ -6,9 +6,7 @@ import kr.hhplus.be.server.coupon.application.CouponService;
 import kr.hhplus.be.server.coupon.application.dto.CouponCommandDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,6 +21,22 @@ public class CouponController {
             @RequestParam Long userId
     ) {
         CouponCommandDTO.GetAvailableCouponsResult result = couponService.getAvailableCoupons(userId);
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    @Operation(summary = "쿠폰 취소", description = "유저 ID와 쿠폰 ID로 쿠폰을 취소합니다.")
+    @PutMapping("/coupons/{couponId}/cancel")
+    public ResponseEntity<ApiResponse<CouponCommandDTO.canceledCouponResult>> cancelCoupon(
+            @Parameter(description = "유저 ID", required = true, example = "123")
+            @RequestParam Long userId,
+            @Parameter(description = "쿠폰 ID", required = true, example = "456")
+            @PathVariable Long couponId
+    ) {
+        CouponCommandDTO.cancelCouponCommand cancelCouponCommand = CouponCommandDTO.cancelCouponCommand.builder()
+                .userId(userId)
+                .couponId(couponId)
+                .build();
+        CouponCommandDTO.canceledCouponResult result = couponService.cancelCoupon(cancelCouponCommand);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 }
