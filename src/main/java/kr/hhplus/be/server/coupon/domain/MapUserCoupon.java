@@ -27,4 +27,10 @@ public class MapUserCoupon {
         }
         this.couponState = CouponState.ACTIVE;
     }
+    public void useCoupon() {
+        if(this.couponState != CouponState.ACTIVE) {
+            throw new InvalidCouponStateException("쿠폰은 사용 가능한 상태가 아닙니다.");
+        }
+        this.couponState = CouponState.USED;
+    }
 }
