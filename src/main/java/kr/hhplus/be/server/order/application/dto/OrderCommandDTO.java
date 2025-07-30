@@ -1,7 +1,10 @@
 package kr.hhplus.be.server.order.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import kr.hhplus.be.server.order.common.PaymentStatus;
 import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.domain.OrderItem;
+import kr.hhplus.be.server.order.domain.PaymentHistory;
 import kr.hhplus.be.server.order.mapper.OrderMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +22,12 @@ public class OrderCommandDTO {
 
         private Long orderedAmount;     // 주문 금액
 
-        private Long discountAmount;
+        private Long discountAmount;    // 할인 금액
 
-        private Boolean isCouponUsed;
+        private Long paidAmount;        // 결제 금액
+
+        @Builder.Default
+        private Boolean isCouponUsed = false;   // 쿠폰 사용 여부, 기본값은 false
 
         private Long couponId;
 
@@ -30,6 +36,16 @@ public class OrderCommandDTO {
         public CreateOrderCommand setOrderedProducts(List<CreateOrderItemCommand> orderedProducts) {
             this.orderedProducts = orderedProducts;
             return this;
+        }
+
+        public PaymentCommand toPaymentCommand() {
+            return PaymentCommand.builder()
+                    .userId(this.userId)
+                    .totalAmount(this.orderedAmount)
+                    .discountAmount(this.discountAmount)
+                    .paidAmount(this.paidAmount)
+                    .couponId(this.isCouponUsed ? this.couponId : null)
+                    .build();
         }
 
         public Order toDomain(){
@@ -64,7 +80,20 @@ public class OrderCommandDTO {
 
         private Long discountAmount;
 
+        private Long paidAmount;        // 결제 금액, 실제 결제된 금액
+
+        // -- pay
+        private Long paymentHistoryId; // 결제 기록 ID, 생성된 결제 기록의 ID
+        private PaymentStatus paymentStatus; // 결제 상태
+
         private List<CreateOrderItemResult> orderedProducts;
+
+        public void setPaymentHistoryId(Long paymentHistoryId) {
+            this.paymentHistoryId = paymentHistoryId;
+        }
+        public void setPaymentStatus(PaymentStatus paymentStatus) {
+            this.paymentStatus = paymentStatus;
+        }
 
         public static CreateOrderResult from(Order order, List<OrderItem> orderItems) {
 
@@ -73,6 +102,7 @@ public class OrderCommandDTO {
                 .userId(order.getUserId())
                 .orderedAmount(order.getTotalAmount())
                 .discountAmount(order.getDiscountAmount())
+                .paidAmount(order.getPaidAmount())
                 .orderedProducts(
                     orderItems.stream()
                         .map(OrderCommandDTO.CreateOrderItemResult::from)
@@ -84,7 +114,7 @@ public class OrderCommandDTO {
 
     @Getter
     @Builder
-    public static class CreateOrderItemResult {
+        public static class CreateOrderItemResult {
         private Long userId;                    // 주문자
         private String productName;             // 상품명
         private Long productAmount;                     // 상품 금액
@@ -102,4 +132,75 @@ public class OrderCommandDTO {
         }
     }
 
+    @Builder
+    @AllArgsConstructor
+    public static class PaymentCommand {
+        private Long userId;
+        private Long totalAmount;
+        private Long discountAmount;
+        private Long paidAmount; // 결제 금액, 실제 결제된 금액
+        private Long couponId;
+
+        @Builder.Default
+        private PaymentStatus paymentStatus = PaymentStatus.SUCCESS;
+
+        public PaymentHistory toDomain(){
+            return PaymentHistory.builder()
+                    .userId(this.userId)
+                    .totalAmount(this.totalAmount)
+                    .discountAmount(this.discountAmount)
+                    .couponId(this.couponId)
+                    .paymentStatus(this.paymentStatus)
+                    .build();
+        }
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @Getter
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class PaymentHistoryResult {
+        private Long paymentHistoryId; // 결제 기록 ID, 생성된 결제 기록의 ID
+        private Long userId;
+        private Long totalAmount;
+        private Long discountAmount;
+        private Long paidAmount; // 결제 금액, 실제 결제된 금액
+        private Long couponId;
+        private PaymentStatus paymentStatus;
+
+        public static PaymentHistoryResult from(PaymentHistory paymentHistory) {
+            return PaymentHistoryResult.builder()
+                    .paymentHistoryId(paymentHistory.getPaymentHistoryId())
+                    .userId(paymentHistory.getUserId())
+                    .totalAmount(paymentHistory.getTotalAmount())
+                    .discountAmount(paymentHistory.getDiscountAmount())
+                    .paidAmount(paymentHistory.getPaidAmount())
+                    .couponId(paymentHistory.getPaymentStatus() == PaymentStatus.DISCOUNT ? paymentHistory.getCouponId() : null)
+                    .paymentStatus(paymentHistory.getPaymentStatus())
+                    .build();
+        }
+    }
+
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class CreateOrderCommandResult {
+        private Long orderId;          // 주문 ID, 생성된 주문의 ID
+        private Long userId;            // 주문을 생성하는 사용자 ID
+        private Long orderedAmount;     // 주문 금액
+        private Long discountAmount;
+        private List<CreateOrderItemCommand> orderedProducts;
+
+        public static CreateOrderCommandResult from(CreateOrderCommand command, List<CreateOrderItemCommand> items) {
+            return CreateOrderCommandResult.builder()
+                    .orderId(command.getOrderedProducts().get(0).getProductId()) // 예시로 첫 번째 상품의 ID를 사용
+                    .userId(command.getUserId())
+                    .orderedAmount(command.getOrderedAmount())
+                    .discountAmount(command.getDiscountAmount())
+                    .orderedProducts(items)
+                    .build();
+        }
+
+    }
 }

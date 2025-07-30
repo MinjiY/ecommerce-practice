@@ -2,6 +2,7 @@ package kr.hhplus.be.server.product.application;
 
 import kr.hhplus.be.server.exception.ExceptionCode;
 import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
+import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO.ProductResult;
 import kr.hhplus.be.server.product.common.ProductState;
 import kr.hhplus.be.server.product.domain.Product;
@@ -14,9 +15,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,67 +82,66 @@ class ProductServiceTest {
         });
     }
 
-    @DisplayName("상품이 존재하고 재고가 충분하면 재고를 감소시킨다.")
-    @Test
-    void decreaseStock(){
-        // given
-        long productId = 1L;
-        int remainingQuantity = 5;
-        int quantityToDecrease = 2;
-        int expectedQuantity = remainingQuantity - quantityToDecrease;
-        Product product = Product.builder()
-                .productId(productId)
-                .productState(ProductState.AVAILABLE)
-                .name("자바 네트워크 프로그래밍")
-                .description("자바로 배우는 네트워크 프로그래밍의 기초")
-                .price(18000L)
-                .category("IT")
-                .quantity(remainingQuantity)
-                .build();
-
-        when(productRepository.findById(productId)).thenReturn(product);
-        when(productRepository.save(product)).thenReturn(product);
-        // when
-        ProductResult result = productService.decreaseStock(productId, quantityToDecrease);
-        // then
-        verify(productRepository).findById(productId);
-        verify(productRepository).save(product);
-        assertAll(
-            () -> assertNotNull(result, "상품 재고 감소 결과가 null이 아닙니다."),
-            () -> assertEquals(productId, result.getProductId(), "상품 ID가 일치합니다."),
-            () -> assertEquals("자바 네트워크 프로그래밍", result.getName(), "상품 이름이 일치합니다."),
-            () -> assertEquals(expectedQuantity, result.getQuantity(), "상품 수량이 감소되어야 합니다."),
-            () -> assertEquals(ProductState.AVAILABLE, result.getProductState(), "상품 상태가 일치합니다.")
-        );
-    }
-
     @DisplayName("재고 차감 후 상품의 재고가 0개면 상품의 상태가 품절 상태로 변경된다.")
     @Test
     void productStateSoldOut(){
         // given
-        long productId = 1L;
-        int remainingQuantity = 100;
-        int quantityToDecrease = 100;
-        int expectedQuantity = remainingQuantity - quantityToDecrease;
-        Product product = Product.builder()
-                .productId(productId)
-                .productState(ProductState.AVAILABLE)
-                .name("자바 네트워크 프로그래밍")
-                .description("자바로 배우는 네트워크 프로그래밍의 기초")
-                .price(18000L)
-                .category("IT")
-                .quantity(remainingQuantity)
-                .build();
+        long firstProductId = 1L;
+        long secondProductId = 2L;
+        int firstRemainingQuantity = 5;
+        int secondRemainingQuantity = 2;
+        int firstQuantityToDecrease = 5; // 첫 번째 상품의 재고를 모두 감소
+        int secondQuantityToDecrease = 1; // 두 번째 상품의 재고를 모두 감소
+        List<Product> products = List.of(
+                Product.builder()
+                        .productId(firstProductId)
+                        .productState(ProductState.AVAILABLE)
+                        .name("자바 네트워크 프로그래밍")
+                        .description("자바로 배우는 네트워크 프로그래밍의 기초")
+                        .price(18000L)
+                        .category("IT")
+                        .quantity(firstRemainingQuantity)
+                        .build(),
+                Product.builder()
+                        .productId(secondProductId)
+                        .productState(ProductState.AVAILABLE)
+                        .name("자바 네트워크 프로그래밍")
+                        .description("자바로 배우는 네트워크 프로그래밍의 기초")
+                        .price(18000L)
+                        .category("IT")
+                        .quantity(secondRemainingQuantity)
+                        .build()
+        );
 
-        when(productRepository.findById(productId)).thenReturn(product);
-        when(productRepository.save(product)).thenReturn(product);
+        when(productRepository.findAllById(any(List.class))).thenReturn(products);
+        when(productRepository.saveAll(any())).thenReturn(products);
+
         // when
-        ProductResult result = productService.decreaseStock(productId, quantityToDecrease);
+        List<ProductResult> result = productService.decreaseStock(
+                List.of(
+                        OrderCommandDTO.CreateOrderItemCommand.builder()
+                                .productId(firstProductId)
+                                .orderQuantity(firstQuantityToDecrease)
+                                .build(),
+                        OrderCommandDTO.CreateOrderItemCommand.builder()
+                                .productId(secondProductId)
+                                .orderQuantity(secondQuantityToDecrease)
+                                .build()
+                )
+        );
         // then
-        verify(productRepository).findById(productId);
-        verify(productRepository).save(product);
-        assertEquals(expectedQuantity, result.getQuantity(), "상품 수량이 감소되어야 합니다.");
-        assertEquals(ProductState.SOLD_OUT, result.getProductState(), "상품 상태는 SOLD_OUT이어야 합니다.");
+        verify(productRepository).findAllById(any(List.class));
+        verify(productRepository).saveAll(any());
+        assertEquals(2, result.size(), "두 개의 상품이 반환되어야 합니다.");
+        assertThat(result.get(0).getProductId()).isEqualTo(firstProductId);
+        assertEquals(firstProductId, result.get(0).getProductId(), "첫 번째 상품 ID가 일치해야 합니다.");
+        assertEquals(firstRemainingQuantity - firstQuantityToDecrease, result.get(0).getQuantity());
+        assertEquals(ProductState.SOLD_OUT, result.get(0).getProductState(), "첫 번째 상품 상태는 SOLD_OUT이어야 합니다.");
+        assertThat(result.get(1).getProductId()).isEqualTo(secondProductId);
+        assertEquals(secondProductId, result.get(1).getProductId(), "두 번째 상품 ID가 일치해야 합니다.");
+        assertEquals(secondRemainingQuantity - secondQuantityToDecrease, result.get(1).getQuantity());
+        assertEquals(ProductState.AVAILABLE, result.get(1).getProductState(), "두 번째 상품 상태는 AVAILABLE이어야 합니다.");
+
 
     }
 }

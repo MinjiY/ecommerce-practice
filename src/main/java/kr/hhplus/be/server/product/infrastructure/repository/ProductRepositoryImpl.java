@@ -8,6 +8,8 @@ import kr.hhplus.be.server.product.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepository {
 
@@ -21,5 +23,22 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Product save(Product product) {
         return ProductMapper.INSTANCE.entityToDomain(productRepository.save(productMapper.domainToEntity(product)));
+    }
+
+    @Override
+    public List<Product> findAllById(List<Long> productIds) {
+        return productRepository.findAllById(productIds).stream()
+                .map(productMapper::entityToDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Product> saveAll(List<Product> products) {
+        List<ProductEntity> productEntities = products.stream()
+                .map(productMapper::domainToEntity)
+                .toList();
+        return productRepository.saveAll(productEntities).stream()
+                .map(productMapper::entityToDomain)
+                .toList();
     }
 }

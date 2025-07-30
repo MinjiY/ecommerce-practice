@@ -25,13 +25,18 @@ public class OrderEntity extends BaseTimeEntity {
 
     private Long totalAmount;
     private Long discountAmount;
+    private Long paidAmount;
+
+    private Long paymentHistoryId;
 
     @Builder
-    public OrderEntity(Long userId, OrderStatus orderStatus, Long totalAmount, Long discountAmount) {
+    public OrderEntity(Long userId, OrderStatus orderStatus, Long totalAmount, Long discountAmount, Long paidAmount, Long paymentHistoryId) {
         this.userId = userId;
         this.orderStatus = orderStatus;
         this.totalAmount = totalAmount;
         this.discountAmount = discountAmount;
+        this.paidAmount = paidAmount;
+        this.paymentHistoryId = paymentHistoryId;
     }
 
     // for Test

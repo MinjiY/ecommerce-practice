@@ -19,9 +19,12 @@ public class PointEntity {
     private Long userId;
 
     @Builder
-    public PointEntity(Long pointId, Long balance, Long userId) {
-        this.pointId = pointId;
+    public PointEntity(Long balance, Long userId) {
         this.balance = balance;
         this.userId = userId;
+    }
+
+    public void chargeAmount(Long balance) {
+        this.balance += balance;
     }
 }

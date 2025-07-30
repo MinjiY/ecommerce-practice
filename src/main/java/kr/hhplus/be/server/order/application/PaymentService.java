@@ -5,8 +5,6 @@ import kr.hhplus.be.server.order.domain.PaymentHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @RequiredArgsConstructor
 @Service
 public class PaymentService {
