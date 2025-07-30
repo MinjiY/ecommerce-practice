@@ -27,5 +27,4 @@ public class CouponEntity {
 
     private BigDecimal discountRate;
 
-
 }
