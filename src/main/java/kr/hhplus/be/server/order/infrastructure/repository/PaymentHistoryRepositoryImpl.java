@@ -1,9 +1,7 @@
 package kr.hhplus.be.server.order.infrastructure.repository;
 
-import kr.hhplus.be.server.order.application.OrderItemRepository;
 import kr.hhplus.be.server.order.application.PaymentHistoryRepository;
 import kr.hhplus.be.server.order.domain.PaymentHistory;
-import kr.hhplus.be.server.order.infrastructure.entity.OrderItemEntity;
 import kr.hhplus.be.server.order.infrastructure.entity.PaymentHistoryEntity;
 import kr.hhplus.be.server.order.mapper.OrderMapper;
 import lombok.RequiredArgsConstructor;

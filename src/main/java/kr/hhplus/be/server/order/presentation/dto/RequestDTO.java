@@ -2,13 +2,11 @@ package kr.hhplus.be.server.order.presentation.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import kr.hhplus.be.server.MockDTO;
 import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
 import kr.hhplus.be.server.order.mapper.OrderMapper;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RequestDTO {
 

@@ -6,12 +6,9 @@ import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO.ProductResult;
 import kr.hhplus.be.server.product.domain.Product;
-import kr.hhplus.be.server.product.infrastructure.entity.ProductEntity;
-import kr.hhplus.be.server.product.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
