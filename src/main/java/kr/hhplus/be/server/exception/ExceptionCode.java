@@ -21,6 +21,9 @@ public enum ExceptionCode {
     ORDERE_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "R003", "Ordered Amount Mismatch"),
     INVALID_CHARGE_AMOUNT(HttpStatus.BAD_REQUEST, "R004", "Invalid Charge Amount"),
     INVALID_WITHDRAW_AMOUNT(HttpStatus.BAD_REQUEST, "R005", "Invalid Withdraw Amount"),
+
+    INVALID_COUPON_STATE(HttpStatus.BAD_REQUEST, "R006", "Invalid Coupon State"),
+
     REQUEST_FAILED(HttpStatus.BAD_REQUEST, "P001", "Request Failed");
 
     private final HttpStatus status;
