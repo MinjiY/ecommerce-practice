@@ -22,8 +22,8 @@ public class MapUserCoupon {
     private String couponName;
 
     public void cancelCoupon() {
-        if(this.couponState == CouponState.USED || this.couponState == CouponState.EXPIRED) {
-            throw new InvalidCouponStateException("쿠폰은 이미 사용되었거나 만료되었습니다.");
+        if(this.couponState == CouponState.ACTIVE || this.couponState == CouponState.EXPIRED) {
+            throw new InvalidCouponStateException("쿠폰은 사용 가능하거나 이미 만료되었습니다.");
         }
         this.couponState = CouponState.ACTIVE;
     }

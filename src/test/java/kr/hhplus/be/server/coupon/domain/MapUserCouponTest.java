@@ -9,14 +9,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MapUserCouponTest {
 
-    @DisplayName("이미 사용되었거나 만료된 쿠폰을 취소하면 InvalidCouponStateException이 발생한다.")
+    @DisplayName("사용 가능하거나 이미 만료된 쿠폰을 취소하면 InvalidCouponStateException이 발생한다.")
     @Test
     void cancelCouponWhenUsedAndExpired() {
         // given
-        MapUserCoupon usedCoupon = MapUserCoupon.builder()
+        MapUserCoupon activeCoupon = MapUserCoupon.builder()
                 .userId(1L)
                 .couponId(1L)
-                .couponState(CouponState.USED)
+                .couponState(CouponState.ACTIVE)
                 .couponName("30% 할인 쿠폰")
                 .build();
 
@@ -28,7 +28,7 @@ class MapUserCouponTest {
                 .build();
 
         // when and then
-        assertThrows(InvalidCouponStateException.class, usedCoupon::cancelCoupon);
+        assertThrows(InvalidCouponStateException.class, activeCoupon::cancelCoupon);
         assertThrows(InvalidCouponStateException.class, expiredCoupon::cancelCoupon);
     }
 
