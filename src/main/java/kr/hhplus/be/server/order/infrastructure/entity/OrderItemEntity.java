@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Profile;
 
 @Entity
-@Table(name = "order_items")
+@Table(name = "order_item")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderItemEntity {

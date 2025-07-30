@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Profile;
 
 @Entity
-@Table(name = "products")
+@Table(name = "product")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductEntity extends BaseTimeEntity {
