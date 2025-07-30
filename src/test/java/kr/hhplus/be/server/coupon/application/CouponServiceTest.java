@@ -82,4 +82,49 @@ class CouponServiceTest {
         assertThat(result.getNumberOfAvailableCoupons(), is(expectedCoupons.size()));
         assertTrue(result.getAvailableCoupons().isEmpty(), "Available coupons should be empty");
    }
+
+    @DisplayName("유저가 쿠폰 사용을 취소한다.")
+    @Test
+    void cancelCoupon() {
+        // given
+        Long userId = 123L;
+        Long couponId = 1L;
+
+        MapUserCoupon foundMapUserCoupon = MapUserCoupon.builder()
+                .userId(userId)
+                .couponId(couponId)
+                .couponState(CouponState.USED)
+                .couponName("10% 할인 쿠폰")
+                .build();
+
+        MapUserCoupon canceledMapUserCoupon = MapUserCoupon.builder()
+                .userId(userId)
+                .couponId(couponId)
+                .couponState(CouponState.ACTIVE)
+                .couponName("10% 할인 쿠폰")
+                .build();
+
+        when(couponRepository.findByUserIdAndCouponId(any(MapUserCoupon.class)))
+                .thenReturn(foundMapUserCoupon);
+
+        when(couponRepository.save(any(MapUserCoupon.class)))
+                .thenReturn(canceledMapUserCoupon);
+
+        CouponCommandDTO.cancelCouponCommand cancelCommand = CouponCommandDTO.cancelCouponCommand.builder()
+                .userId(userId)
+                .couponId(couponId)
+                .build();
+
+        // when
+        CouponCommandDTO.canceledCouponResult result = couponService.cancelCoupon(cancelCommand);
+
+        // then
+        verify(couponRepository).findByUserIdAndCouponId(any(MapUserCoupon.class));
+        verify(couponRepository).save(any(MapUserCoupon.class));
+        assertNotNull(result);
+        assertThat(result.getUserId(), is(userId));
+        assertThat(result.getCouponId(), is(couponId));
+        assertThat(result.getCouponState(), is(CouponState.ACTIVE));
+
+    }
 }
