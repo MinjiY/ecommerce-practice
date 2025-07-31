@@ -29,4 +29,26 @@ class CouponTest {
         assertThrows(NoRemainingCouponQuantityException.class, coupon::validateCouponForIssuance);
     }
 
+    @DisplayName("쿠폰 발급 시 issuedQuantity와 remainingQuantity가 올바르게 업데이트된다.")
+    @Test
+    public void issueCoupon() {
+        // given
+        Coupon coupon = Coupon.builder()
+                .couponId(1L)
+                .couponName("50% 할인 쿠폰")
+                .expirationDate(LocalDate.now().plusDays(30))
+                .issuableQuantity(10)
+                .issuedQuantity(5)
+                .remainingQuantity(5)
+                .discountRate(new BigDecimal("0.5"))
+                .build();
+
+        // when
+        coupon.issueCoupon();
+
+        // then
+        assertEquals(6, coupon.getIssuedQuantity());
+        assertEquals(4, coupon.getRemainingQuantity());
+    }
+
 }
