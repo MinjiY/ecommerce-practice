@@ -2,7 +2,7 @@ package kr.hhplus.be.server.coupon.infrastructure.entity;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.coupon.common.CouponState;
-import kr.hhplus.be.server.user.entity.UserEntity;
+import kr.hhplus.be.server.user.infrastructure.entity.UserEntity;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
@@ -13,15 +13,10 @@ import lombok.NoArgsConstructor;
 public class MapUserCouponEntity {
 
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    private Long userId;
 
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon_id")
-    private CouponEntity coupon;
-
+    private Long couponId;
 
     @Enumerated(EnumType.STRING)
     private CouponState couponState;
@@ -30,9 +25,11 @@ public class MapUserCouponEntity {
 
 
     @Builder
-    public MapUserCouponEntity(UserEntity user, CouponEntity coupon) {
-        this.user = user;
-        this.coupon = coupon;
+    public MapUserCouponEntity(Long userId, Long couponId, CouponState couponState, String couponName) {
+        this.userId = userId;
+        this.couponId = couponId;
+        this.couponState = couponState;
+        this.couponName = couponName;
     }
 
 }
