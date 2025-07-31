@@ -31,16 +31,9 @@ public class CouponController {
     @Operation(summary = "쿠폰 취소", description = "유저 ID와 쿠폰 ID로 쿠폰을 취소합니다.")
     @PutMapping("/coupons/{couponId}/cancel")
     public ResponseEntity<ApiResponse<CouponCommandDTO.canceledCouponResult>> cancelCoupon(
-            @Parameter(description = "유저 ID", required = true, example = "123")
-            @RequestParam Long userId,
-            @Parameter(description = "쿠폰 ID", required = true, example = "456")
-            @PathVariable Long couponId
+            @Valid @RequestBody RequestDTO.cancelCouponRequest request
     ) {
-        CouponCommandDTO.cancelCouponCommand cancelCouponCommand = CouponCommandDTO.cancelCouponCommand.builder()
-                .userId(userId)
-                .couponId(couponId)
-                .build();
-        CouponCommandDTO.canceledCouponResult result = couponService.cancelCoupon(cancelCouponCommand);
+        CouponCommandDTO.canceledCouponResult result = couponService.cancelCoupon(request.toCommand());
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
