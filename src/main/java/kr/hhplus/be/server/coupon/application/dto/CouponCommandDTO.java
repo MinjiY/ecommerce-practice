@@ -95,4 +95,29 @@ public class CouponCommandDTO {
         }
     }
 
+    @Getter
+    @Builder
+    public static class useCouponCommand {
+        private Long userId;
+        private Long couponId;
+    }
+
+    @Getter
+    @Builder
+    public static class useCouponResult {
+        private Long userId;
+        private Long couponId;
+        private CouponState couponState;
+        private String couponName;
+
+        public static useCouponResult from(MapUserCoupon mapUserCoupon) {
+            return useCouponResult.builder()
+                    .userId(mapUserCoupon.getUserId())
+                    .couponId(mapUserCoupon.getCouponId())
+                    .couponState(mapUserCoupon.getCouponState())
+                    .couponName(mapUserCoupon.getCouponName())
+                    .build();
+        }
+    }
+
 }

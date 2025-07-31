@@ -35,4 +35,14 @@ public class CouponService {
         return CouponCommandDTO.canceledCouponResult.from(canceledCoupon);
     }
 
+    public CouponCommandDTO.useCouponResult useCoupon(CouponCommandDTO.useCouponCommand useCouponCommand) {
+        MapUserCoupon foundMapUserCoupon = mapUserCouponRepository.findByUserIdAndCouponId(MapUserCoupon.builder()
+                .userId(useCouponCommand.getUserId())
+                .couponId(useCouponCommand.getCouponId())
+                .build());
+        foundMapUserCoupon.useCoupon();
+        MapUserCoupon usedCoupon = mapUserCouponRepository.save(foundMapUserCoupon);
+        return CouponCommandDTO.useCouponResult.from(usedCoupon);
+    }
+
 }
