@@ -45,4 +45,13 @@ public class CouponController {
         CouponCommandDTO.issueCouponResult result = issueCouponService.issueCoupon(request.toCommand());
         return ResponseEntity.ok(ApiResponse.success(result));
     }
+
+    @Operation(summary = "쿠폰 사용", description = "유저 ID와 쿠폰 ID로 쿠폰을 사용합니다.")
+    @PutMapping("/coupons/{couponId}/user")
+    public ResponseEntity<ApiResponse<CouponCommandDTO.useCouponResult>> cancelCoupon(
+            @Valid @RequestBody RequestDTO.useCouponRequest request
+    ) {
+        CouponCommandDTO.useCouponResult result = couponService.useCoupon(request.toCommand());
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
 }
