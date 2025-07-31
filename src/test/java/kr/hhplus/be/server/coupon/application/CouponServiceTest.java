@@ -25,7 +25,7 @@ class CouponServiceTest {
     private CouponService couponService;
 
     @Mock
-    private CouponRepository couponRepository;
+    private MapUserCouponRepository mapUserCouponRepository;
 
     @DisplayName("유저의 사용 가능한 쿠폰 목록을 조회한다.")
     @Test
@@ -38,7 +38,7 @@ class CouponServiceTest {
             MapUserCoupon.builder().userId(userId).couponId(2L).couponState(CouponState.ACTIVE).couponName("30% 할인 쿠폰").build()
         );
 
-        when(couponRepository.findAvailableCouponsByUserIdAndCouponState(
+        when(mapUserCouponRepository.findAvailableCouponsByUserIdAndCouponState(
                 any(MapUserCoupon.class)
         )).thenReturn(expectedCoupons);
 
@@ -46,7 +46,7 @@ class CouponServiceTest {
         CouponCommandDTO.GetAvailableCouponsResult result = couponService.getAvailableCoupons(userId);
 
         // then
-        verify(couponRepository).findAvailableCouponsByUserIdAndCouponState(
+        verify(mapUserCouponRepository).findAvailableCouponsByUserIdAndCouponState(
             any(MapUserCoupon.class)
         );
         assertNotNull(result);
@@ -66,7 +66,7 @@ class CouponServiceTest {
 
         List<MapUserCoupon> expectedCoupons = List.of();
 
-        when(couponRepository.findAvailableCouponsByUserIdAndCouponState(
+        when(mapUserCouponRepository.findAvailableCouponsByUserIdAndCouponState(
                 any(MapUserCoupon.class)
         )).thenReturn(expectedCoupons);
 
@@ -74,7 +74,7 @@ class CouponServiceTest {
         CouponCommandDTO.GetAvailableCouponsResult result = couponService.getAvailableCoupons(userId);
 
         // then
-        verify(couponRepository).findAvailableCouponsByUserIdAndCouponState(
+        verify(mapUserCouponRepository).findAvailableCouponsByUserIdAndCouponState(
                 any(MapUserCoupon.class)
         );
         assertNotNull(result);
@@ -104,10 +104,10 @@ class CouponServiceTest {
                 .couponName("10% 할인 쿠폰")
                 .build();
 
-        when(couponRepository.findByUserIdAndCouponId(any(MapUserCoupon.class)))
+        when(mapUserCouponRepository.findByUserIdAndCouponId(any(MapUserCoupon.class)))
                 .thenReturn(foundMapUserCoupon);
 
-        when(couponRepository.save(any(MapUserCoupon.class)))
+        when(mapUserCouponRepository.save(any(MapUserCoupon.class)))
                 .thenReturn(canceledMapUserCoupon);
 
         CouponCommandDTO.cancelCouponCommand cancelCommand = CouponCommandDTO.cancelCouponCommand.builder()
@@ -119,8 +119,8 @@ class CouponServiceTest {
         CouponCommandDTO.canceledCouponResult result = couponService.cancelCoupon(cancelCommand);
 
         // then
-        verify(couponRepository).findByUserIdAndCouponId(any(MapUserCoupon.class));
-        verify(couponRepository).save(any(MapUserCoupon.class));
+        verify(mapUserCouponRepository).findByUserIdAndCouponId(any(MapUserCoupon.class));
+        verify(mapUserCouponRepository).save(any(MapUserCoupon.class));
         assertNotNull(result);
         assertThat(result.getUserId(), is(userId));
         assertThat(result.getCouponId(), is(couponId));

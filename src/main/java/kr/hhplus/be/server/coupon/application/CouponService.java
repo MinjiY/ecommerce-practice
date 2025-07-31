@@ -12,11 +12,11 @@ import java.util.List;
 @Service
 public class CouponService {
 
-    private CouponRepository couponRepository;
+    private MapUserCouponRepository mapUserCouponRepository;
 
     public CouponCommandDTO.GetAvailableCouponsResult getAvailableCoupons(Long userId) {
         final Long findUserId = userId;
-        List<MapUserCoupon> mapUserCoupons = couponRepository.findAvailableCouponsByUserIdAndCouponState(
+        List<MapUserCoupon> mapUserCoupons = mapUserCouponRepository.findAvailableCouponsByUserIdAndCouponState(
                 MapUserCoupon.builder()
                         .userId(findUserId)
                         .couponState(CouponState.ACTIVE)
@@ -26,12 +26,12 @@ public class CouponService {
     }
 
     public CouponCommandDTO.canceledCouponResult cancelCoupon(CouponCommandDTO.cancelCouponCommand cancelCouponCommand) {
-        MapUserCoupon foundMapUserCoupon = couponRepository.findByUserIdAndCouponId(MapUserCoupon.builder()
+        MapUserCoupon foundMapUserCoupon = mapUserCouponRepository.findByUserIdAndCouponId(MapUserCoupon.builder()
                 .userId(cancelCouponCommand.getUserId())
                 .couponId(cancelCouponCommand.getCouponId())
                 .build());
         foundMapUserCoupon.cancelCoupon();
-        MapUserCoupon canceledCoupon = couponRepository.save(foundMapUserCoupon);
+        MapUserCoupon canceledCoupon = mapUserCouponRepository.save(foundMapUserCoupon);
         return CouponCommandDTO.canceledCouponResult.from(canceledCoupon);
     }
 
