@@ -3,6 +3,7 @@ package kr.hhplus.be.server.coupon.application.dto;
 import kr.hhplus.be.server.coupon.common.CouponState;
 import kr.hhplus.be.server.coupon.domain.Coupon;
 import kr.hhplus.be.server.coupon.domain.MapUserCoupon;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -43,6 +44,31 @@ public class CouponCommandDTO {
         }
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class issueCouponCommand {
+        private Long userId;
+        private Long couponId;
+    }
+
+    @Getter
+    @Builder
+    public static class issueCouponResult {
+        private Long userId;
+        private Long couponId;
+        private CouponState couponState;
+        private String couponName;
+
+        public static issueCouponResult from(MapUserCoupon mapUserCoupon) {
+            return issueCouponResult.builder()
+                    .userId(mapUserCoupon.getUserId())
+                    .couponId(mapUserCoupon.getCouponId())
+                    .couponState(mapUserCoupon.getCouponState())
+                    .couponName(mapUserCoupon.getCouponName())
+                    .build();
+        }
+    }
 
     @Getter
     @Builder
