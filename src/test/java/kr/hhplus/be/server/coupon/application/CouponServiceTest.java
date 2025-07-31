@@ -127,4 +127,50 @@ class CouponServiceTest {
         assertThat(result.getCouponState(), is(CouponState.ACTIVE));
 
     }
+
+    @DisplayName("유저가 쿠폰을 사용한다.")
+    @Test
+    void useCoupon() {
+        // given
+        Long userId = 123L;
+        Long couponId = 1L;
+        MapUserCoupon foundMapUserCoupon = MapUserCoupon.builder()
+                .userId(userId)
+                .couponId(couponId)
+                .couponState(CouponState.ACTIVE)
+                .couponName("10% 할인 쿠폰")
+                .build();
+
+        MapUserCoupon usedMapUserCoupon = MapUserCoupon.builder()
+                .userId(userId)
+                .couponId(couponId)
+                .couponState(CouponState.USED)
+                .couponName("10% 할인 쿠폰")
+                .build();
+
+        when(mapUserCouponRepository.findByUserIdAndCouponId(any(MapUserCoupon.class)))
+                .thenReturn(foundMapUserCoupon);
+
+        when(mapUserCouponRepository.save(any(MapUserCoupon.class)))
+                .thenReturn(usedMapUserCoupon);
+
+        CouponCommandDTO.useCouponCommand useCommand = CouponCommandDTO.useCouponCommand.builder()
+                .userId(userId)
+                .couponId(couponId)
+                .build();
+
+        // when
+        CouponCommandDTO.useCouponResult result = couponService.useCoupon(useCommand);
+
+        // then
+        verify(mapUserCouponRepository).findByUserIdAndCouponId(any(MapUserCoupon.class));
+        verify(mapUserCouponRepository).save(any(MapUserCoupon.class));
+        assertNotNull(result);
+        assertThat(result.getUserId(), is(userId));
+        assertThat(result.getCouponId(), is(couponId));
+        assertThat(result.getCouponState(), is(CouponState.USED));
+        assertThat(result.getCouponName(), is("10% 할인 쿠폰"));
+
+
+    }
 }
