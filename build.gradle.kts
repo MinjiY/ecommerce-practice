@@ -44,6 +44,7 @@ dependencies {
 
 	// DB
 	runtimeOnly("com.mysql:mysql-connector-j")
+	runtimeOnly("com.h2database:h2")
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -51,6 +52,13 @@ dependencies {
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mysql")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	// mapstruct
+	// https://mvnrepository.com/artifact/org.mapstruct/mapstruct
+	implementation ("org.mapstruct:mapstruct:1.5.5.Final")
+	// https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
+	annotationProcessor ("org.mapstruct:mapstruct-processor:1.5.5.Final")
+
 }
 
 tasks.withType<Test> {

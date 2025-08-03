@@ -1,0 +1,141 @@
+package kr.hhplus.be.server.product.infrastructure.entity;
+
+import kr.hhplus.be.server.product.common.ProductState;
+import kr.hhplus.be.server.product.domain.Product;
+import kr.hhplus.be.server.product.application.ProductRepository;
+import kr.hhplus.be.server.product.mapper.ProductMapper;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import org.mockito.Mock;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("상품 엔티티의 영속성을 잘 지키고 있는지, 상품 도메인과 매핑이 잘 되는지 테스트한다.")
+class ProductEntityTest {
+
+    private final ProductMapper productMapper = ProductMapper.INSTANCE;
+
+    @Mock
+    private JpaRepository<ProductEntity, Long> productRepository;
+
+    @DisplayName("상품 도메인이 엔티티에 정상적으로 매핑된다.")
+    @Test
+    public void testProductToProductEntity(){
+        Product product = Product.builder()
+                .name("Test Product")
+                .description("This is a test product.")
+                .category("Test Category")
+                .price(1000L)
+                .quantity(10)
+                .productState(ProductState.AVAILABLE)
+                .build();
+
+        // when
+        ProductEntity mappedProductEntity = productMapper.domainToEntity(product);
+
+        // then
+        assertNotNull(mappedProductEntity);
+        assertEquals(product.getName(), mappedProductEntity.getName());
+        assertEquals(product.getDescription(), mappedProductEntity.getDescription());
+        assertEquals(product.getCategory(), mappedProductEntity.getCategory());
+        assertEquals(product.getPrice(), mappedProductEntity.getPrice());
+        assertEquals(product.getQuantity(), mappedProductEntity.getQuantity());
+        assertEquals(ProductState.AVAILABLE, mappedProductEntity.getProductState());
+    }
+
+    @DisplayName("상품 엔티티가 도메인에 정상적으로 매핑된다.")
+    @Test
+    public void testProductEntityToProduct(){
+        long productId = 1L;
+        // given
+        ProductEntity productEntity = ProductEntity.builder()
+                .name("클린 아키텍처 만들면서 배우기")
+                .description("클린 아키텍처 만들면서 배우는 책!")
+                .category("IT")
+                .price(23000L)
+                .quantity(23)
+                .productState(ProductState.AVAILABLE)
+                .build();
+        productEntity.setProductId(productId);
+
+        // when
+        Product product = productMapper.entityToDomain(productEntity);
+
+        // then
+        assertNotNull(product);
+        assertEquals(productId, productEntity.getProductId());
+        assertEquals(productEntity.getName(), product.getName());
+        assertEquals(productEntity.getDescription(), product.getDescription());
+        assertEquals(productEntity.getCategory(), product.getCategory());
+        assertEquals(productEntity.getPrice(), product.getPrice());
+        assertEquals(productEntity.getQuantity(), product.getQuantity());
+        assertEquals(ProductState.AVAILABLE, product.getProductState());
+
+    }
+
+//    @DisplayName("상품 엔티티가 영속성 컨텍스트에 잘 저장되는지 테스트한다.")
+//    @Test
+//    public void testProductEntitySave(){
+//        // given
+//        ProductEntity productEntity = ProductEntity.builder()
+//                .name("Test Product")
+//                .description("This is a test product.")
+//                .category("Test Category")
+//                .price(1000L)
+//                .quantity(10)
+//                .productState(ProductState.AVAILABLE)
+//                .build();
+//
+//        when(productRepository.save(productEntity)).thenReturn(productEntity);
+//
+//        // when
+//        ProductEntity savedProductEntity = productRepository.save(productEntity);
+//
+//        // then
+//        assertNotNull(savedProductEntity);
+//        assertEquals(productEntity.getName(), savedProductEntity.getName());
+//        assertEquals(productEntity.getDescription(), savedProductEntity.getDescription());
+//        assertEquals(productEntity.getCategory(), savedProductEntity.getCategory());
+//        assertEquals(productEntity.getPrice(), savedProductEntity.getPrice());
+//        assertEquals(productEntity.getQuantity(), savedProductEntity.getQuantity());
+//        assertEquals(ProductState.AVAILABLE, savedProductEntity.getProductState());
+//    }
+
+    @DisplayName("상품 엔티티가 Id를 기준으로 조회가 가능하다.")
+    @Test
+    public void testProductEntityFindById(){
+        // given
+        long productId = 1L;
+        ProductEntity productEntity = ProductEntity.builder()
+                .name("도메인 주도 개발 시작하기")
+                .description("DDD 핵심 개념 정리부터 구현까지")
+                .category("IT")
+                .price(18000L)
+                .quantity(1)
+                .productState(ProductState.AVAILABLE)
+                .build();
+        productEntity.setProductId(productId);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(productEntity));
+
+        // when
+        ProductEntity findProductEntity = productRepository.findById(productId).orElse(null);
+
+        // then
+        assertNotNull(findProductEntity);
+        assertEquals(productEntity.getName(), findProductEntity.getName());
+        assertEquals(productEntity.getDescription(), findProductEntity.getDescription());
+        assertEquals(productEntity.getCategory(), findProductEntity.getCategory());
+        assertEquals(productEntity.getPrice(), findProductEntity.getPrice());
+        assertEquals(productEntity.getQuantity(), findProductEntity.getQuantity());
+        assertEquals(ProductState.AVAILABLE, findProductEntity.getProductState());
+    }
+}
