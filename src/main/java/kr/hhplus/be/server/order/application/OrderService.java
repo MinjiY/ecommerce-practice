@@ -13,8 +13,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private OrderRepository orderRepository;
-    private OrderItemRepository orderItemRepository;
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
 
     public OrderCommandDTO.CreateOrderResult createOrder(CreateOrderCommand createOrderCommand) {
         List<OrderItem> orderItems = createOrderCommand.getOrderedProducts().stream()

@@ -48,7 +48,7 @@ class OrderServiceTest {
                 .orderId(orderId)
                 .totalAmount(totalAmount)
                 .orderStatus(OrderStatus.COMPLETED)
-                .createdAt(LocalDateTime.now())
+                .orderedAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
 

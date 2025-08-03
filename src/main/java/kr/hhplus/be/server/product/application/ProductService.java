@@ -5,10 +5,13 @@ import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO.ProductResult;
+import kr.hhplus.be.server.product.application.dto.findProductDTO;
 import kr.hhplus.be.server.product.domain.Product;
+import kr.hhplus.be.server.product.domain.TopNProduct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,8 +20,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductService {
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
+    public void findAllProducts(List<Long> productIds) {
+        List<Product> products = productRepository.findAllById(productIds);
+
+    }
 
     public ProductResult findProduct(Long productId) {
         return ProductResult.from(productRepository.findById(productId));
@@ -47,5 +54,16 @@ public class ProductService {
         return ProductServiceDTO.ProductListResult.from(productRepository.saveAll(decreasedProducts));
     }
 
+    /**
+     * 최근 M일 동안 가장 많이 팔린 상품을 조회합니다.
+     * 요구사항 맞게 parameter 넣어서 재사용하기
+     * @param topN 조회할 상품의 개수
+     * @param lastM 최근 M일
+     * @return 가장 많이 팔린 상품 목록
+     */
+    public List<ProductServiceDTO.GetTopN> getTopNBestSellingProductsLastMDays(Long topN, Long lastM) {
+        List<TopNProduct> products =  productRepository.findTopNProductsLastMDays(LocalDate.now(), topN, lastM);
+        return ProductServiceDTO.GetTopN.from(products);
+    }
 
 }

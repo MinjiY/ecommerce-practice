@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderCommandDTO {
@@ -82,6 +84,11 @@ public class OrderCommandDTO {
 
         private Long paidAmount;        // 결제 금액, 실제 결제된 금액
 
+        private LocalDate orderedDate;
+        private LocalDate updateDate;
+        private LocalDateTime orderedAt;
+        private LocalDateTime updatedAt;
+
         // -- pay
         private Long paymentHistoryId; // 결제 기록 ID, 생성된 결제 기록의 ID
         private PaymentStatus paymentStatus; // 결제 상태
@@ -103,6 +110,10 @@ public class OrderCommandDTO {
                 .orderedAmount(order.getTotalAmount())
                 .discountAmount(order.getDiscountAmount())
                 .paidAmount(order.getPaidAmount())
+                    .orderedDate(order.getOrderedDate())
+                .updateDate(order.getUpdateDate())
+                .orderedAt(order.getOrderedAt())
+                .updatedAt(order.getUpdatedAt())
                 .orderedProducts(
                     orderItems.stream()
                         .map(OrderCommandDTO.CreateOrderItemResult::from)
@@ -120,7 +131,6 @@ public class OrderCommandDTO {
         private Long productAmount;                     // 상품 금액
         private Integer orderQuantity;          // 주문 수량
         private Long productId;                 // 상품 ID
-
         public static CreateOrderItemResult from(OrderItem orderItem) {
             return CreateOrderItemResult.builder()
                 .userId(orderItem.getUserId())
@@ -179,28 +189,5 @@ public class OrderCommandDTO {
                     .paymentStatus(paymentHistory.getPaymentStatus())
                     .build();
         }
-    }
-
-
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    public static class CreateOrderCommandResult {
-        private Long orderId;          // 주문 ID, 생성된 주문의 ID
-        private Long userId;            // 주문을 생성하는 사용자 ID
-        private Long orderedAmount;     // 주문 금액
-        private Long discountAmount;
-        private List<CreateOrderItemCommand> orderedProducts;
-
-        public static CreateOrderCommandResult from(CreateOrderCommand command, List<CreateOrderItemCommand> items) {
-            return CreateOrderCommandResult.builder()
-                    .orderId(command.getOrderedProducts().get(0).getProductId()) // 예시로 첫 번째 상품의 ID를 사용
-                    .userId(command.getUserId())
-                    .orderedAmount(command.getOrderedAmount())
-                    .discountAmount(command.getDiscountAmount())
-                    .orderedProducts(items)
-                    .build();
-        }
-
     }
 }

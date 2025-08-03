@@ -6,26 +6,15 @@ import java.util.Objects;
 
 
 public class MapUserCouponId{
-    private Long user;
-    private Long coupon;
+    private Long userId;
+    private Long couponId;
 
     public MapUserCouponId() {}
 
-    public MapUserCouponId(Long user, Long coupon) {
-        this.user = user;
-        this.coupon = coupon;
+    public MapUserCouponId(Long userId, Long couponId) {
+        this.userId = userId;
+        this.couponId = couponId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MapUserCouponId that = (MapUserCouponId) o;
-        return Objects.equals(user, that.user) && Objects.equals(coupon, that.coupon);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(user, coupon);
-    }
 }
