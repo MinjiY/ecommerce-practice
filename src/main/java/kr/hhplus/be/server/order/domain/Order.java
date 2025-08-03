@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,8 +23,11 @@ public class Order {
     @Builder.Default
     private final Long discountAmount = 0L; // 할인 금액
     private final Long paidAmount; // 결제 금액
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+
+    private LocalDate orderedDate;
+    private LocalDate updateDate;
+    private LocalDateTime orderedAt;
+    private LocalDateTime updatedAt;
 
     private final Long paymentHistoryId; // 결제 이력 ID
 

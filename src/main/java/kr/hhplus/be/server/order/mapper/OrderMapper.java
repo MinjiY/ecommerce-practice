@@ -23,7 +23,7 @@ public interface OrderMapper {
     OrderEntity domainToEntity(Order order);
 
     @Mapping(target= "totalAmount", source = "orderedAmount")
-    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "orderedAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "orderId", ignore = true)
     @Mapping(target = "orderStatus", ignore = true)
