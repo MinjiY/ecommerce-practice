@@ -55,6 +55,7 @@ CREATE TABLE PAYMENT_HISTORY
     USER_ID            BIGINT      NOT NULL,
     AMOUNT             BIGINT      NOT NULL,
     DISCOUNT_AMOUNT    BIGINT      NOT NULL,
+    PAID_AMOUNT         BIGINT      NOT NULL, -- 결제 금액 (총 주문 금액에서 할인받은 금액)
     COUPON_ID          BIGINT,
     PAYMENT_STATUS     VARCHAR(20) NOT NULL, -- SUCCESS, CANCELED
     ORDER_DATE         DATE        NOT NULL,
