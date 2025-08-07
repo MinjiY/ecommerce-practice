@@ -11,6 +11,7 @@ import kr.hhplus.be.server.product.mapper.ProductNativeMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,16 +25,19 @@ public class ProductRepositoryImpl implements ProductRepository {
     private final ProductNativeMapper productNativeMapper;
 
 
+    @Transactional(readOnly = true)
     @Override
     public Product findById(Long productId) {
         return ProductMapper.INSTANCE.entityToDomain(productRepository.findById(productId).orElseThrow(ResourceNotFoundException::new));
     }
 
+    @Transactional
     @Override
     public Product save(Product product) {
         return ProductMapper.INSTANCE.entityToDomain(productRepository.save(ProductMapper.INSTANCE.domainToEntity(product)));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Product> findAllById(List<Long> productIds){
         List<Product> products = productRepository.findAllById(productIds).stream()
@@ -42,6 +46,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         return products;
     }
 
+    @Transactional
     @Override
     public List<Product> saveAll(List<Product> products) {
         List<ProductEntity> productEntities = products.stream()
@@ -52,6 +57,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<TopNProduct> findTopNProductsLastMDays(LocalDate currentDate, Long topN, Long lastM) {
         List<findProductDTO> findProductDTOList = productRepository.findTopNProductsLastMDays(currentDate, topN, lastM);

@@ -8,6 +8,7 @@ import kr.hhplus.be.server.point.domain.PointHistory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,7 @@ public class PointService {
         );
         return PointCommandDTO.ChargePointResult.from(savedPoint);
     }
+
 
     public PointCommandDTO.GetUserPointResult getUserPoint(Long userId){
         final long findUserId = userId;

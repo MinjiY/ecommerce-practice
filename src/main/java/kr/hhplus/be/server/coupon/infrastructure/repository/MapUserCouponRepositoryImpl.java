@@ -7,6 +7,7 @@ import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.mapper.CouponMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class MapUserCouponRepositoryImpl implements MapUserCouponRepository {
     private final MapUserCouponJpaRepository mapUserCouponJpaRepository;
 
     // 사용 가능한 쿠폰 목록 조회
+    @Transactional(readOnly = true)
     @Override
     public List<MapUserCoupon> findAvailableCouponsByUserIdAndCouponState(MapUserCoupon mapUserCoupon){
         List<MapUserCouponEntity> mapUserCouponEntities = mapUserCouponJpaRepository.findAllByUserIdAndCouponState(mapUserCoupon.getUserId(), mapUserCoupon.getCouponState());
@@ -25,6 +27,7 @@ public class MapUserCouponRepositoryImpl implements MapUserCouponRepository {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public MapUserCoupon findByUserIdAndCouponId(MapUserCoupon mapUserCoupon){
         MapUserCouponEntity mapUserCouponEntity = mapUserCouponJpaRepository.findByUserIdAndCouponId(
@@ -34,6 +37,7 @@ public class MapUserCouponRepositoryImpl implements MapUserCouponRepository {
         return CouponMapper.INSTANCE.entityToMapUserCouponDomain(mapUserCouponEntity);
     }
 
+    @Transactional
     @Override
     public MapUserCoupon save(MapUserCoupon mapUserCoupon) {
         return CouponMapper.INSTANCE.entityToMapUserCouponDomain(mapUserCouponJpaRepository.save(CouponMapper.INSTANCE.domainToMapUserCouponEntity(mapUserCoupon)));

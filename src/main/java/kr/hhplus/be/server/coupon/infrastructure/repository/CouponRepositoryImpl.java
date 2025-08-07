@@ -8,12 +8,14 @@ import kr.hhplus.be.server.mapper.CouponMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
 public class CouponRepositoryImpl implements CouponRepository {
     private final CouponJpaRepository couponJpaRepository;
 
+    @Transactional(readOnly = true)
     @Override
     public Coupon findByCouponId(Coupon coupon) {
         return CouponMapper.INSTANCE.entityToCouponDomain(
@@ -22,6 +24,7 @@ public class CouponRepositoryImpl implements CouponRepository {
         );
     }
 
+    @Transactional
     @Override
     public Coupon save(Coupon coupon){
         CouponEntity couponEntity = CouponMapper.INSTANCE.domainToCouponEntity(coupon);
