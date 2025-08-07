@@ -6,11 +6,13 @@ import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.infrastructure.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
+@Component
 public class UserRepositoryImpl implements UserRepository {
 
-    private JpaRepository<UserEntity, Long> userJpaRepository;
+    private final UserJpaRepository userJpaRepository;
 
     @Override
     public User findByUserId(User user) {

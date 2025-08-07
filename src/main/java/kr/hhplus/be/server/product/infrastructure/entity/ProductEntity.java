@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Profile;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "product")
 @Getter
@@ -28,8 +30,10 @@ public class ProductEntity extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ProductState productState;
 
+
     @Builder
-    public ProductEntity(String name, String description, String category, Long price, Integer quantity, ProductState productState) {
+    public ProductEntity(Long productId, String name, String description, String category, Long price, Integer quantity, ProductState productState) {
+        this.productId = productId;
         this.name = name;
         this.description = description;
         this.category = category;
@@ -37,10 +41,8 @@ public class ProductEntity extends BaseTimeEntity {
         this.quantity = quantity;
         this.productState = productState;
     }
-
-    // for Test
-    @Profile("test")
-    public void setProductId(Long productId) {
+    public ProductEntity setProductId(Long productId) {
         this.productId = productId;
+        return this;
     }
 }

@@ -7,16 +7,18 @@ import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.mapper.CouponMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
+@Component
 public class CouponRepositoryImpl implements CouponRepository {
-    private JpaRepository<CouponEntity, Long> couponJpaRepository;
+    private final CouponJpaRepository couponJpaRepository;
 
     @Override
     public Coupon findByCouponId(Coupon coupon) {
         return CouponMapper.INSTANCE.entityToCouponDomain(
                 couponJpaRepository.findById(coupon.getCouponId())
-                .orElseThrow(() -> new ResourceNotFoundException("쿠폰을 찾을 수 없습니다. id: " + coupon.getCouponId()))
+                        .orElseThrow(() -> new ResourceNotFoundException("쿠폰을 찾을 수 없습니다. id: " + coupon.getCouponId()))
         );
     }
 

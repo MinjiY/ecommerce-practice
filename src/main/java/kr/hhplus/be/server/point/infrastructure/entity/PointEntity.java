@@ -24,6 +24,10 @@ public class PointEntity {
         this.userId = userId;
     }
 
+    public void setPointId(Long pointId) {
+        this.pointId = pointId;
+    }
+
     public void chargeAmount(Long balance) {
         this.balance += balance;
     }

@@ -6,14 +6,16 @@ import kr.hhplus.be.server.point.common.TransactionType;
 import kr.hhplus.be.server.point.domain.Point;
 import kr.hhplus.be.server.point.domain.PointHistory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PointService {
 
-    private PointRepository pointRepository;
-    private PointHistoryRepository pointHistoryRepository;
+    private final PointRepository pointRepository;
+    private final PointHistoryRepository pointHistoryRepository;
 
     public PointCommandDTO.ChargePointResult chargePoint(PointCommandDTO.chargePointCommand chargePointCommand) {
         // 요청 유저에 대한 data row 가 없으면 새로 생성

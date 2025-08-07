@@ -3,7 +3,9 @@ package kr.hhplus.be.server.coupon.presentation.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import kr.hhplus.be.server.coupon.application.dto.CouponCommandDTO;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class RequestDTO {
 
@@ -32,6 +34,7 @@ public class RequestDTO {
 
 
     @Getter
+    @NoArgsConstructor
     public static class IssueCouponRequest {
         @NotNull(message = "유저 ID는 필수입니다.")
         @Schema(description = "유저 ID", example = "1234")
@@ -55,6 +58,7 @@ public class RequestDTO {
     }
 
     @Getter
+    @NoArgsConstructor
     public static class useCouponRequest {
         @NotNull(message = "유저 ID는 필수입니다.")
         @Schema(description = "유저 ID", example = "1234")

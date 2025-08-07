@@ -3,13 +3,16 @@ package kr.hhplus.be.server.coupon.infrastructure.entity;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.coupon.common.CouponState;
 import kr.hhplus.be.server.user.infrastructure.entity.UserEntity;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "MAP_USER_COUPON")
 @IdClass(MapUserCouponId.class)
-@NoArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MapUserCouponEntity {
 
     @Id

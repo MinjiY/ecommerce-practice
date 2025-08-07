@@ -5,11 +5,15 @@ import jakarta.validation.constraints.NotNull;
 import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
 import kr.hhplus.be.server.order.mapper.OrderMapper;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 public class RequestDTO {
 
+    @Getter
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class CreateOrderRequest {
         @NotNull(message = "유저 ID는 필수입니다.")
@@ -38,13 +42,14 @@ public class RequestDTO {
         List<CreateOrderItemRequest> orderedProducts;
 
         public OrderCommandDTO.CreateOrderCommand toCommand() {
+            List<OrderCommandDTO.CreateOrderItemCommand> orderedProducts = this.orderedProducts.stream().map(CreateOrderItemRequest::toCommand).toList();
             return OrderMapper.INSTANCE.requestToCommand(this)
-                    .setOrderedProducts(
-                            this.orderedProducts.stream().map(CreateOrderItemRequest::toCommand)
-                        .toList());
+                    .setOrderedProducts(orderedProducts);
         }
     }
 
+    @Getter
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class CreateOrderItemRequest{
         @NotNull(message = "유저 ID는 필수입니다.")

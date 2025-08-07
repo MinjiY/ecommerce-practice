@@ -19,7 +19,8 @@ class TestcontainersConfiguration {
 					"--character-set-server=utf8mb4",
 					"--collation-server=utf8mb4_unicode_ci",
 					"--skip-character-set-client-handshake"
-			);
+			)
+				.withInitScript("test2.sql");
 		MYSQL_CONTAINER.start();
 
 		System.setProperty("spring.datasource.url", MYSQL_CONTAINER.getJdbcUrl() + "?characterEncoding=UTF-8&serverTimezone=UTC");

@@ -6,15 +6,15 @@ import kr.hhplus.be.server.coupon.infrastructure.entity.MapUserCouponEntity;
 import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.mapper.CouponMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-public class MapUserMapUserCouponRepositoryImpl implements MapUserCouponRepository {
+@Component
+public class MapUserCouponRepositoryImpl implements MapUserCouponRepository {
 
-    private final MapUserCouponJpaRepositoryImpl mapUserCouponJpaRepository;
-
-    private final CouponMapper couponMapper;
+    private final MapUserCouponJpaRepository mapUserCouponJpaRepository;
 
     // 사용 가능한 쿠폰 목록 조회
     @Override
@@ -36,7 +36,7 @@ public class MapUserMapUserCouponRepositoryImpl implements MapUserCouponReposito
 
     @Override
     public MapUserCoupon save(MapUserCoupon mapUserCoupon) {
-        return couponMapper.entityToMapUserCouponDomain(mapUserCouponJpaRepository.save(couponMapper.domainToMapUserCouponEntity(mapUserCoupon)));
+        return CouponMapper.INSTANCE.entityToMapUserCouponDomain(mapUserCouponJpaRepository.save(CouponMapper.INSTANCE.domainToMapUserCouponEntity(mapUserCoupon)));
     }
 
 }

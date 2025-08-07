@@ -3,6 +3,7 @@ package kr.hhplus.be.server.point.domain;
 import kr.hhplus.be.server.exception.ExceptionCode;
 import kr.hhplus.be.server.exception.custom.InvalidChargeAmountException;
 import kr.hhplus.be.server.exception.custom.InvalidWithdrawAmountException;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 

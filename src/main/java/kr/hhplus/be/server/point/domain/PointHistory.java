@@ -4,8 +4,12 @@ package kr.hhplus.be.server.point.domain;
 import kr.hhplus.be.server.exception.ExceptionCode;
 import kr.hhplus.be.server.exception.custom.InvalidChargeAmountException;
 import kr.hhplus.be.server.point.common.TransactionType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
+@AllArgsConstructor
 public class PointHistory {
     private Long pointHistoryId;
 

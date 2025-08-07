@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface MapUserCouponJpaRepositoryImpl extends JpaRepository<MapUserCouponEntity, MapUserCouponId> {
+public interface MapUserCouponJpaRepository extends JpaRepository<MapUserCouponEntity, MapUserCouponId> {
 
     List<MapUserCouponEntity> findAllByUserIdAndCouponState(Long userId, CouponState couponState);
 

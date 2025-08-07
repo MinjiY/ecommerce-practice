@@ -6,25 +6,30 @@ import kr.hhplus.be.server.point.domain.Point;
 import kr.hhplus.be.server.point.infrastructure.entity.PointEntity;
 import kr.hhplus.be.server.point.mapper.PointMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
+@Slf4j
 public class PointRepositoryImpl implements PointRepository {
 
     private final PointJpaRepository pointRepository;
 
-    private final PointMapper pointMapper;
-
     @Override
     public Point save(Point point){
-        PointEntity pointEntity = pointMapper.domainToEntity(point);
-        return pointMapper.entityDomain(pointRepository.save(pointEntity));
+        PointEntity pointEntity = PointMapper.INSTANCE.domainToEntity(point);
+        pointEntity.setPointId(point.getPointId());
+        return PointMapper.INSTANCE.entityDomain(pointRepository.save(pointEntity));
     }
 
     @Override
     public Point findByUserId(Long userId){
         PointEntity pointEntity = pointRepository.findByUserId(userId)
                 .orElse(new PointEntity(0L, userId));
-        return pointMapper.entityDomain(pointEntity);
+
+        log.info("PointRepositoryImpl.findByUserId: userId={}, pointEntity={}", userId, pointEntity);
+        return PointMapper.INSTANCE.entityDomain(pointEntity);
     }
 
 }

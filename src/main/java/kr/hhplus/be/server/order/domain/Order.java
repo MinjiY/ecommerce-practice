@@ -24,12 +24,10 @@ public class Order {
     private final Long discountAmount = 0L; // 할인 금액
     private final Long paidAmount; // 결제 금액
 
-    private LocalDate orderedDate;
+    private LocalDate orderDate;
     private LocalDate updateDate;
     private LocalDateTime orderedAt;
     private LocalDateTime updatedAt;
-
-    private final Long paymentHistoryId; // 결제 이력 ID
 
     public void orderedAmountMismatch(List<OrderItem> orderItems) {
         Long orderedAmount = orderItems.stream().map(OrderItem::getCalculateAmount).reduce(0L, Long::sum);

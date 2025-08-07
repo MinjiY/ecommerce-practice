@@ -12,9 +12,9 @@ import kr.hhplus.be.server.coupon.application.dto.CouponCommandDTO;
 @Service
 public class IssueCouponService implements IssueCoupon {
 
-    private CouponRepository couponRepository;
-    private MapUserCouponRepository mapUserCouponRepository;
-    private UserRepository userRepository;
+    private final CouponRepository couponRepository;
+    private final MapUserCouponRepository mapUserCouponRepository;
+    private final UserRepository userRepository;
 
     @Override
     public CouponCommandDTO.issueCouponResult issueCoupon(CouponCommandDTO.issueCouponCommand issueCouponCommand) {
