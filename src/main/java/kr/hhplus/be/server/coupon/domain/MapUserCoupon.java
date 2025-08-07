@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.coupon.domain;
 
 import kr.hhplus.be.server.coupon.common.CouponState;
+import kr.hhplus.be.server.exception.ExceptionCode;
 import kr.hhplus.be.server.exception.custom.InvalidCouponStateException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,5 +33,11 @@ public class MapUserCoupon {
             throw new InvalidCouponStateException("쿠폰은 사용 가능한 상태가 아닙니다.");
         }
         this.couponState = CouponState.USED;
+    }
+    public void alreadyIssued(Long userId, Long couponId) {
+        if (this.userId.equals(userId) && this.couponId.equals(couponId)) {
+            throw new InvalidCouponStateException(ExceptionCode.ALREADY_ISSUED_COUPON,"이미 발급된 쿠폰입니다. userId: " + userId + ", couponId: " + couponId);
+        }
+
     }
 }

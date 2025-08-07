@@ -25,6 +25,8 @@ public enum ExceptionCode {
     INVALID_COUPON_STATE(HttpStatus.BAD_REQUEST, "R006", "Invalid Coupon State"),
     COUPON_ISSUANCE_LIMIT_EXCEEDED(HttpStatus.CONFLICT, "R007", "Coupon Issuance Limit Exceeded"),
     COUPON_NO_REMAINING_QUANTITY(HttpStatus.BAD_REQUEST, "R008", "No Remaining Coupon Quantity"),
+    ALREADY_ISSUED_COUPON(HttpStatus.BAD_REQUEST, "R009", "Already Issued Coupon"),
+
 
     REQUEST_FAILED(HttpStatus.BAD_REQUEST, "P001", "Request Failed");
 

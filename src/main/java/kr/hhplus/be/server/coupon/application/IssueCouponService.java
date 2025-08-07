@@ -24,10 +24,17 @@ public class IssueCouponService implements IssueCoupon {
         User user = userRepository.findByUserId(User.builder().userId(userId).build());
         Coupon coupon = couponRepository.findByCouponId(Coupon.builder().couponId(couponId).build());
 
+        MapUserCoupon mapUserCoupon =  mapUserCouponRepository.findByUserIdAndCouponId(
+                MapUserCoupon.builder()
+                        .userId(user.getUserId())
+                        .couponId(coupon.getCouponId())
+                        .build()
+        );
+        mapUserCoupon.alreadyIssued(user.getUserId(), coupon.getCouponId());
+
         // TODO : refactor 쿠폰 발급 로직에서 Coupon 테이블에 직접 save 없애기
         coupon.issueCoupon();
         Coupon updatedCoupon = couponRepository.save(coupon);
-
         MapUserCoupon savedMapUserCoupon = mapUserCouponRepository.save(
                 MapUserCoupon.builder()
                         .userId(user.getUserId())
