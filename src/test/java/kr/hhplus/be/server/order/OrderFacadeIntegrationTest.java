@@ -44,6 +44,9 @@ import org.testcontainers.utility.TestcontainersConfiguration;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -100,6 +103,13 @@ public class OrderFacadeIntegrationTest {
 
     private MapUserCoupon mapUserCoupon;
 
+    private Product firstProduct;
+    private Product secondProduct;
+
+    private List<OrderCommandDTO.CreateOrderItemCommand> orderedProducts;
+    private Integer firstOrderQuantity;
+    private Integer secondOrderQuantity;
+
     @BeforeEach
     void setUp() {
         long userId = 1L;
@@ -118,7 +128,7 @@ public class OrderFacadeIntegrationTest {
         PointEntity pointEntity = pointJpaRepository.save(
                 PointEntity.builder()
                         .userId(1L)
-                        .balance(100000L)
+                        .balance(10000000000L)
                         .build()
                 );
 
@@ -227,6 +237,72 @@ public class OrderFacadeIntegrationTest {
                 .couponState(mapUserCouponEntity.getCouponState())
                 .couponName(mapUserCouponEntity.getCouponName())
                 .build();
+
+
+        String firstProductName = "First Test Product";
+        String secondProductName = "Second Test Product";
+        Long firstProductPrice = 30L;
+        Long secondProductPrice = 10L;
+        Integer firstProductQuantity = 10;
+        Integer secondProductQuantity = 10;
+
+        ProductEntity firstProductEntity = productJpaRepository.save(ProductEntity.builder()
+                .name(firstProductName)
+                .price(firstProductPrice)
+                .category("IT")
+                .description("First Test Product Description")
+                .productState(ProductState.AVAILABLE)
+                .quantity(firstProductQuantity)
+                .build());
+
+        ProductEntity secondProductEntity = productJpaRepository.save(ProductEntity.builder()
+                .name(secondProductName)
+                .category("IT")
+                .description("Second Test Product Description")
+                .price(secondProductPrice)
+                .productState(ProductState.AVAILABLE)
+                .quantity(secondProductQuantity)
+                .build());
+
+        firstProduct = Product.builder()
+                .name(firstProductEntity.getName())
+                .price(firstProductEntity.getPrice())
+                .productId(firstProductEntity.getProductId())
+                .category(firstProductEntity.getCategory())
+                .description(firstProductEntity.getDescription())
+                .productState(firstProductEntity.getProductState())
+                .quantity(firstProductEntity.getQuantity())
+                .build();
+
+        secondProduct = Product.builder()
+                .name(secondProductEntity.getName())
+                .price(secondProductEntity.getPrice())
+                .productId(secondProductEntity.getProductId())
+                .category(secondProductEntity.getCategory())
+                .description(secondProductEntity.getDescription())
+                .productState(secondProductEntity.getProductState())
+                .quantity(secondProductEntity.getQuantity())
+                .build();
+
+        firstOrderQuantity = 1;
+        secondProductQuantity = 2;
+        orderedProducts = List.of(
+                OrderCommandDTO.CreateOrderItemCommand.builder()
+                        .userId(userId)
+                        .productName(firstProduct.getName())
+                        .productAmount(firstProduct.getPrice())
+                        .orderQuantity(firstOrderQuantity)
+                        .productId(firstProduct.getProductId())
+                        .build(),
+                OrderCommandDTO.CreateOrderItemCommand.builder()
+                        .userId(userId)
+                        .productName(secondProduct.getName())
+                        .productAmount(secondProduct.getPrice())
+                        .orderQuantity(secondProductQuantity)
+                        .productId(secondProduct.getProductId())
+                        .build()
+        );
+
     }
 
     @AfterEach
@@ -413,4 +489,73 @@ public class OrderFacadeIntegrationTest {
     }
 
 
+    @DisplayName("주문생성 동시성 테스트 - 사용자가 주문 생성을 여러번 했을때, 주문은 순차적으로 처리된다.")
+    @Test
+    void createOrderTestWithConcurrentRequests() throws InterruptedException {
+        // given
+        Long userId = 123L;
+        Long firstProductId = firstProduct.getProductId();
+        Long secondProductId = secondProduct.getProductId();
+
+        Integer initialFirstProductQuantity = firstProduct.getQuantity();
+        Integer initialSecondProductQuantity = secondProduct.getQuantity();
+
+        Integer firstProductOrderQuantity = 1; // 첫 번째 상품 주문 수량
+        Integer secondProductOrderQuantity = 2; // 두 번째 상품 주문 수량
+
+        Integer firstProductExpectedQuantity = initialFirstProductQuantity - firstProductOrderQuantity; // 주문 수량 1개로 가정
+        Integer secondProductExpectedQuantity = initialSecondProductQuantity - secondProductOrderQuantity; // 주문 수량 2개로 가정
+
+
+        Long initialUserPoint = point.getBalance();
+        Long totalAmount = (firstProduct.getPrice() * firstProductOrderQuantity) + (secondProduct.getPrice() * secondProductExpectedQuantity);
+        Long expectedUserPoint = initialUserPoint - totalAmount;
+
+        int threadCount = 5;
+        runConcurrent(threadCount, () -> {
+            orderFacadeService.createOrder(
+                OrderCommandDTO.CreateOrderCommand.builder()
+                        .userId(userId)
+                        .paidAmount(totalAmount)
+                        .discountAmount(0L)
+                        .orderedAmount(totalAmount)
+                        .orderedProducts(orderedProducts)
+                        .build()
+            );
+        });
+
+
+        // then
+        ProductEntity firstResultProduct = productJpaRepository.findById(firstProductId).orElseThrow();
+        assertThat(firstResultProduct.getQuantity()).withFailMessage("첫번째 재고 수량이 맞지 않습니다. " +
+                "결과 : " + firstResultProduct.getQuantity() +" 기댓값: " + firstProductExpectedQuantity).isEqualTo(firstProductExpectedQuantity);
+
+        ProductEntity secondResultProduct = productJpaRepository.findById(secondProductId).orElseThrow();
+        assertThat(secondResultProduct.getQuantity()).withFailMessage("두번째 재고 수량이 맞지 않습니다. " +
+                "결과 : " + secondResultProduct.getQuantity() +" 기댓값: " + secondProductExpectedQuantity).isEqualTo(secondProductExpectedQuantity);
+
+        PointEntity resultPoint = pointJpaRepository.findById(userId).orElseThrow();
+        assertThat(resultPoint.getBalance()).withFailMessage("유저 포인트가 맞지 않습니다.").isEqualTo(expectedUserPoint);
+
+        List<OrderEntity> resultOrders = orderJpaRepository.findAllByUserId(userId);
+        assertThat(resultOrders.size()).isEqualTo(10);
+    }
+
+    private void runConcurrent(int threadCount, Runnable task) throws InterruptedException {
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executor.submit(() -> {
+                try {
+                    task.run();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        executor.shutdown();
+    }
 }
