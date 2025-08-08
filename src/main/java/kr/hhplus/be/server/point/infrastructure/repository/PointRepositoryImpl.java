@@ -27,8 +27,6 @@ public class PointRepositoryImpl implements PointRepository {
     public Point findByUserId(Long userId){
         PointEntity pointEntity = pointRepository.findByUserId(userId)
                 .orElse(new PointEntity(0L, userId));
-
-        log.info("PointRepositoryImpl.findByUserId: userId={}, pointEntity={}", userId, pointEntity);
         return PointMapper.INSTANCE.entityDomain(pointEntity);
     }
 

@@ -72,15 +72,6 @@ public class PointIntegrationTest {
                 .userId(userId)
                 .accounts("abc123@naver.com")
                 .build();
-//        UserEntity userEntity = userJpaRepository.save(UserEntity.builder()
-//                .userId(userId)
-//                        .accounts("abc123@naver.com")
-//                        .build()
-//        );
-//        user = User.builder()
-//                .userId(userEntity.getUserId())
-//                .accounts(userEntity.getAccounts())
-//                .build();
 
         PointEntity pointEntity = pointJpaRepository.save(
                 PointEntity.builder()
@@ -116,6 +107,28 @@ public class PointIntegrationTest {
 
         // Then
         PointEntity findPoint = pointJpaRepository.findByUserIdForTest(
+                user.getUserId()
+        ).orElseThrow();
+
+        assertThat(result.getBalance()).isEqualTo(expectedBalance);
+        assertThat(findPoint.getBalance()).isEqualTo(expectedBalance);
+    }
+
+    @DisplayName("포인트 사용 통합 테스트")
+    @Test
+    public void pointWithdrawIntegrationTest() {
+        // given
+        Long useAmount = 10000L;
+        Long expectedBalance = point.getBalance() - useAmount;
+        PointCommandDTO.withdrawPointCommand command = PointCommandDTO.withdrawPointCommand.builder()
+                .userId(user.getUserId())
+                .amount(useAmount)
+                .build();
+        // when
+        PointCommandDTO.WithDrawPointResult result = pointService.withdrawPoint(command);
+
+        // Then
+        PointEntity findPoint = pointJpaRepository.findByUserId(
                 user.getUserId()
         ).orElseThrow();
 

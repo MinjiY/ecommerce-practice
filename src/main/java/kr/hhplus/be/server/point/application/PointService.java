@@ -48,13 +48,13 @@ public class PointService {
         return PointCommandDTO.ChargePointResult.from(savedPoint);
     }
 
-
     public PointCommandDTO.GetUserPointResult getUserPoint(Long userId){
         final long findUserId = userId;
         Point userPoint = pointRepository.findByUserId(findUserId);
         return PointCommandDTO.GetUserPointResult.from(userPoint);
     }
 
+    @Transactional
     public PointCommandDTO.WithDrawPointResult withdrawPoint(PointCommandDTO.withdrawPointCommand withdrawPointCommand) {
         // Point 테이블의 유저의 row가 없으면 0포인트로 간주
         Point userPoint = pointRepository.findByUserId(withdrawPointCommand.getUserId());
