@@ -20,6 +20,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Tag("integration")
@@ -110,5 +114,52 @@ public class PointIntegrationTest {
         assertThat(findPoint.getBalance()).isEqualTo(expectedBalance);
     }
 
+    @DisplayName("포인트 충전 동시성 테스트 - 동일한 유저가 동시에 포인트 충전 요청을 보냈을 때, 순차적으로 처리된다.")
+    @Test
+    public void pointChargeConcurrency() throws InterruptedException {
+        // given
+        Long chargeAmount = 10L;
+        Long expectedBalance = point.getBalance() + chargeAmount;
+        PointCommandDTO.chargePointCommand command = PointCommandDTO.chargePointCommand.builder()
+                .userId(user.getUserId())
+                .amount(chargeAmount)
+                .build();
+
+        int threadCount = 5;
+        Long initialPoint = point.getBalance();
+        Long expectedChargePoint = initialPoint + (threadCount * chargeAmount);
+
+        runConcurrent(threadCount, () -> pointService.chargePoint(command));
+
+        // when
+        PointCommandDTO.ChargePointResult result = pointService.chargePoint(command);
+
+        // Then
+        PointEntity findPoint = pointJpaRepository.findByUserId(
+                user.getUserId()
+        ).orElseThrow();
+
+        assertThat(result.getBalance()).isEqualTo(expectedBalance);
+        assertThat(findPoint.getBalance()).isEqualTo(expectedBalance);
+        assertThat(findPoint.getBalance()).isEqualTo(expectedChargePoint);
+    }
+
+    private void runConcurrent(int threadCount, Runnable task) throws InterruptedException {
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executor.submit(() -> {
+                try {
+                    task.run();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        executor.shutdown();
+    }
 
 }
