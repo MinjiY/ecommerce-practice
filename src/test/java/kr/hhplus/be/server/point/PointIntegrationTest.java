@@ -11,8 +11,6 @@ import kr.hhplus.be.server.point.infrastructure.repository.PointHistoryJpaReposi
 import kr.hhplus.be.server.point.infrastructure.repository.PointJpaRepository;
 import kr.hhplus.be.server.user.domain.User;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
-import kr.hhplus.be.server.user.infrastructure.entity.UserEntity;
 import kr.hhplus.be.server.user.infrastructure.repository.UserJpaRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,21 +182,17 @@ public class PointIntegrationTest {
         assertThat(resultEntity.getBalance()).isEqualTo(expectedWithdrawPoint);
     }
 
-    protected void runConcurrent(int threadCount, Runnable task) throws InterruptedException {
+    private void runConcurrent(int threadCount, Runnable task) throws InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
         for (int i = 0; i < threadCount; i++) {
             executor.submit(() -> {
-                TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-                transactionTemplate.execute(status -> {
-                    try {
-                        task.run();
-                    } finally {
-                        latch.countDown();
-                    }
-                    return null;
-                });
+                try {
+                    task.run();
+                } finally {
+                    latch.countDown();
+                }
             });
         }
 
