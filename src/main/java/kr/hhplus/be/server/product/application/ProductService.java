@@ -11,6 +11,7 @@ import kr.hhplus.be.server.product.domain.TopNProduct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,6 +30,7 @@ public class ProductService {
         return ProductResult.from(productRepository.findById(productId));
     }
 
+    @Transactional
     public List<ProductResult> decreaseStock(List<OrderCommandDTO.CreateOrderItemCommand> orderedProducts) {
 
         Map<Long, Integer> orderedMap = orderedProducts.stream()

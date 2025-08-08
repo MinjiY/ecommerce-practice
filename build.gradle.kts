@@ -59,6 +59,8 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
 	annotationProcessor ("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
+	implementation("org.springframework.retry:spring-retry")
+	implementation("org.springframework.boot:spring-boot-starter-aop")
 }
 
 tasks.withType<Test> {
