@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.point.infrastructure.repository;
 
-import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.point.application.PointRepository;
 import kr.hhplus.be.server.point.domain.Point;
 import kr.hhplus.be.server.point.infrastructure.entity.PointEntity;
@@ -17,7 +16,6 @@ public class PointRepositoryImpl implements PointRepository {
 
     private final PointJpaRepository pointRepository;
 
-    @Transactional
     @Override
     public Point save(Point point){
         PointEntity pointEntity = PointMapper.INSTANCE.domainToEntity(point);
@@ -25,7 +23,6 @@ public class PointRepositoryImpl implements PointRepository {
         return PointMapper.INSTANCE.entityDomain(pointRepository.save(pointEntity));
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Point findByUserId(Long userId){
         PointEntity pointEntity = pointRepository.findByUserId(userId)

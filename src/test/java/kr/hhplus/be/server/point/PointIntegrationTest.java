@@ -2,6 +2,7 @@ package kr.hhplus.be.server.point;
 
 
 import kr.hhplus.be.server.common.CleanUp;
+import kr.hhplus.be.server.point.application.PointRepository;
 import kr.hhplus.be.server.point.application.PointService;
 import kr.hhplus.be.server.point.application.dto.PointCommandDTO;
 import kr.hhplus.be.server.point.domain.Point;
@@ -9,6 +10,8 @@ import kr.hhplus.be.server.point.infrastructure.entity.PointEntity;
 import kr.hhplus.be.server.point.infrastructure.repository.PointHistoryJpaRepository;
 import kr.hhplus.be.server.point.infrastructure.repository.PointJpaRepository;
 import kr.hhplus.be.server.user.domain.User;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import kr.hhplus.be.server.user.infrastructure.entity.UserEntity;
 import kr.hhplus.be.server.user.infrastructure.repository.UserJpaRepository;
 import org.junit.jupiter.api.*;
@@ -49,7 +52,13 @@ public class PointIntegrationTest {
     private PointJpaRepository pointJpaRepository;
 
     @Autowired
+    private PointRepository pointRepository;
+
+    @Autowired
     private PointHistoryJpaRepository pointHistoryJpaRepository;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     private User user;
 
@@ -106,7 +115,7 @@ public class PointIntegrationTest {
         PointCommandDTO.ChargePointResult result = pointService.chargePoint(command);
 
         // Then
-        PointEntity findPoint = pointJpaRepository.findByUserId(
+        PointEntity findPoint = pointJpaRepository.findByUserIdForTest(
                 user.getUserId()
         ).orElseThrow();
 
@@ -119,36 +128,41 @@ public class PointIntegrationTest {
     public void pointChargeConcurrency() throws InterruptedException {
         // given
         Long chargeAmount = 10L;
-        PointCommandDTO.chargePointCommand command = PointCommandDTO.chargePointCommand.builder()
-                .userId(user.getUserId())
-                .amount(chargeAmount)
-                .build();
+
 
         int threadCount = 5;
         Long initialPoint = point.getBalance();
         Long expectedChargePoint = initialPoint + (threadCount * chargeAmount);
 
-        runConcurrent(threadCount, () -> pointService.chargePoint(command));
+        runConcurrent(threadCount, () -> pointService.chargePoint(
+               PointCommandDTO.chargePointCommand.builder()
+                        .userId(user.getUserId())
+                        .amount(chargeAmount)
+                        .build()
+        ));
 
         // Then
-        PointEntity findPoint = pointJpaRepository.findByUserId(
-                user.getUserId()
-        ).orElseThrow();
+        // findByUserId는 락이 걸려있어 test를 위해 findByUserIdForTest 메서드를 사용
+        PointEntity resultEntity = pointJpaRepository.findByUserIdForTest(user.getUserId()).orElseThrow(null);
 
-        assertThat(findPoint.getBalance()).isEqualTo(expectedChargePoint);
+        assertThat(resultEntity.getBalance()).isEqualTo(expectedChargePoint);
     }
 
-    private void runConcurrent(int threadCount, Runnable task) throws InterruptedException {
+    protected void runConcurrent(int threadCount, Runnable task) throws InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
         for (int i = 0; i < threadCount; i++) {
             executor.submit(() -> {
-                try {
-                    task.run();
-                } finally {
-                    latch.countDown();
-                }
+                TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+                transactionTemplate.execute(status -> {
+                    try {
+                        task.run();
+                    } finally {
+                        latch.countDown();
+                    }
+                    return null;
+                });
             });
         }
 
