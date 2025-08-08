@@ -128,7 +128,7 @@ public class PointIntegrationTest {
         PointCommandDTO.WithDrawPointResult result = pointService.withdrawPoint(command);
 
         // Then
-        PointEntity findPoint = pointJpaRepository.findByUserId(
+        PointEntity findPoint = pointJpaRepository.findByUserIdForTest(
                 user.getUserId()
         ).orElseThrow();
 
