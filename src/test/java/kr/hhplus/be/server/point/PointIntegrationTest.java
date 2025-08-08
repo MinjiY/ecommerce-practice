@@ -119,7 +119,6 @@ public class PointIntegrationTest {
     public void pointChargeConcurrency() throws InterruptedException {
         // given
         Long chargeAmount = 10L;
-        Long expectedBalance = point.getBalance() + chargeAmount;
         PointCommandDTO.chargePointCommand command = PointCommandDTO.chargePointCommand.builder()
                 .userId(user.getUserId())
                 .amount(chargeAmount)
@@ -131,16 +130,11 @@ public class PointIntegrationTest {
 
         runConcurrent(threadCount, () -> pointService.chargePoint(command));
 
-        // when
-        PointCommandDTO.ChargePointResult result = pointService.chargePoint(command);
-
         // Then
         PointEntity findPoint = pointJpaRepository.findByUserId(
                 user.getUserId()
         ).orElseThrow();
 
-        assertThat(result.getBalance()).isEqualTo(expectedBalance);
-        assertThat(findPoint.getBalance()).isEqualTo(expectedBalance);
         assertThat(findPoint.getBalance()).isEqualTo(expectedChargePoint);
     }
 
