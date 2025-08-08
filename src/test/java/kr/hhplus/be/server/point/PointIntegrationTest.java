@@ -161,6 +161,29 @@ public class PointIntegrationTest {
         assertThat(resultEntity.getBalance()).isEqualTo(expectedChargePoint);
     }
 
+    @DisplayName("포인트 사용 동시성 테스트 - 동일한 유저가 동시에 포인트 사용 요청을 보냈을 때, 순차적으로 처리된다.")
+    @Test
+    public void pointUseConcurrency() throws InterruptedException {
+        // given
+        long useAmount = 10L;
+        int threadCount = 5;
+        Long initialPoint = point.getBalance();
+        Long expectedWithdrawPoint = initialPoint - (threadCount * useAmount);
+
+        runConcurrent(threadCount, () -> pointService.withdrawPoint(
+                PointCommandDTO.withdrawPointCommand.builder()
+                        .userId(user.getUserId())
+                        .amount(useAmount)
+                        .build())
+        );
+
+        // Then
+        // findByUserId는 락이 걸려있어 test를 위해 findByUserIdForTest 메서드를 사용
+        PointEntity resultEntity = pointJpaRepository.findByUserIdForTest(user.getUserId()).orElseThrow(null);
+
+        assertThat(resultEntity.getBalance()).isEqualTo(expectedWithdrawPoint);
+    }
+
     protected void runConcurrent(int threadCount, Runnable task) throws InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
