@@ -1,0 +1,140 @@
+package kr.hhplus.be.server.product;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import kr.hhplus.be.server.common.CleanUp;
+import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
+import kr.hhplus.be.server.order.infrastructure.entity.OrderEntity;
+import kr.hhplus.be.server.order.infrastructure.entity.OrderItemEntity;
+import kr.hhplus.be.server.point.infrastructure.repository.PointJpaRepository;
+import kr.hhplus.be.server.product.application.ProductService;
+import kr.hhplus.be.server.product.application.dto.ProductServiceDTO;
+import kr.hhplus.be.server.product.common.ProductState;
+import kr.hhplus.be.server.product.domain.Product;
+import kr.hhplus.be.server.product.infrastructure.entity.ProductEntity;
+import kr.hhplus.be.server.product.infrastructure.repository.ProductJpaRepository;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.utility.TestcontainersConfiguration;
+
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+@Tag("integration")
+@ActiveProfiles("integration-test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
+@Import({TestcontainersConfiguration.class})
+public class ProductIntegrationTest {
+
+    @Autowired
+    private CleanUp cleanUp;
+
+    @Autowired
+    private ProductJpaRepository productJpaRepository;
+
+    @Autowired
+    private ProductService productService;
+
+    private Product firstProduct;
+
+    private Product secondProduct;
+    private List<OrderCommandDTO.CreateOrderItemCommand> orderedProducts;
+
+    @BeforeEach
+    void setUp(){
+        long userId = 123L;
+        String firstProductName = "First Test Product";
+        String secondProductName = "Second Test Product";
+
+        ProductEntity firstProductEntity = productJpaRepository.save(ProductEntity.builder()
+                .name(firstProductName)
+                .price(1000L)
+                        .category("IT")
+                        .description("First Test Product Description")
+                .productState(ProductState.AVAILABLE)
+                .quantity(10)
+                .build());
+
+        ProductEntity secondProductEntity = productJpaRepository.save(ProductEntity.builder()
+                .name(secondProductName)
+                        .category("IT")
+                        .description("Second Test Product Description")
+                .price(1000L)
+                .productState(ProductState.AVAILABLE)
+                .quantity(10)
+                .build());
+
+        firstProduct = Product.builder()
+                .name(firstProductEntity.getName())
+                .price(firstProductEntity.getPrice())
+                .productId(firstProductEntity.getProductId())
+                .category(firstProductEntity.getCategory())
+                .description(firstProductEntity.getDescription())
+                .productState(firstProductEntity.getProductState())
+                .quantity(firstProductEntity.getQuantity())
+                .build();
+
+        secondProduct = Product.builder()
+                .name(secondProductEntity.getName())
+                .price(secondProductEntity.getPrice())
+                .productId(secondProductEntity.getProductId())
+                .category(secondProductEntity.getCategory())
+                .description(secondProductEntity.getDescription())
+                .productState(secondProductEntity.getProductState())
+                .quantity(secondProductEntity.getQuantity())
+                .build();
+
+        orderedProducts = List.of(
+                OrderCommandDTO.CreateOrderItemCommand.builder()
+                        .userId(userId)
+                        .productName(firstProduct.getName())
+                        .productAmount(firstProduct.getPrice())
+                        .orderQuantity(firstProduct.getQuantity())
+                        .productId(firstProduct.getProductId())
+                        .build(),
+                OrderCommandDTO.CreateOrderItemCommand.builder()
+                        .userId(userId)
+                        .productName(secondProduct.getName())
+                        .productAmount(secondProduct.getPrice())
+                        .orderQuantity(secondProduct.getQuantity())
+                        .productId(secondProduct.getProductId())
+                        .build()
+                );
+    }
+
+    @AfterEach
+    void tearDown() {
+        cleanUp.all();
+    }
+
+    @DisplayName("상품 재고 차감 통합 테스트")
+    @Test
+    void decreaseStock() {
+        // given
+        // when
+        List<ProductServiceDTO.ProductResult> result = productService.decreaseStock(orderedProducts);
+
+        ProductEntity firstProductEntity = productJpaRepository.findById(firstProduct.getProductId())
+                .orElseThrow();
+        ProductEntity secondProductEntity = productJpaRepository.findById(secondProduct.getProductId())
+                .orElseThrow();
+
+        // then
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getProductId()).isEqualTo(firstProduct.getProductId());
+        assertThat(result.get(0).getQuantity()).isEqualTo(firstProductEntity.getQuantity());
+        assertThat(result.get(1).getProductId()).isEqualTo(secondProductEntity.getProductId());
+        assertThat(result.get(1).getQuantity()).isEqualTo(secondProductEntity.getQuantity());
+    }
+
+
+}
