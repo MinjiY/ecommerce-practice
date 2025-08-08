@@ -1,14 +1,7 @@
 package kr.hhplus.be.server.product;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import kr.hhplus.be.server.common.CleanUp;
 import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
-import kr.hhplus.be.server.order.infrastructure.entity.OrderEntity;
-import kr.hhplus.be.server.order.infrastructure.entity.OrderItemEntity;
-import kr.hhplus.be.server.point.infrastructure.repository.PointJpaRepository;
 import kr.hhplus.be.server.product.application.ProductService;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO;
 import kr.hhplus.be.server.product.common.ProductState;
@@ -21,10 +14,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -48,6 +43,7 @@ public class ProductIntegrationTest {
 
     private Product secondProduct;
     private List<OrderCommandDTO.CreateOrderItemCommand> orderedProducts;
+
 
     @BeforeEach
     void setUp(){
@@ -130,11 +126,68 @@ public class ProductIntegrationTest {
 
         // then
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.get(0).getProductId()).isEqualTo(firstProduct.getProductId());
+        assertThat(result.get(0).getProductId()).isEqualTo(firstProductEntity.getProductId());
         assertThat(result.get(0).getQuantity()).isEqualTo(firstProductEntity.getQuantity());
         assertThat(result.get(1).getProductId()).isEqualTo(secondProductEntity.getProductId());
         assertThat(result.get(1).getQuantity()).isEqualTo(secondProductEntity.getQuantity());
     }
 
+    @DisplayName("재고 차감 동시성 테스트 - 동일한 상품에 대해 동시에 재고 차감 요청을 보냈을 때, 순차적으로 처리된다.")
+    @Test
+    void decreaseStockConcurrencyTest() throws InterruptedException{
+        // given
+        int firstDecreaseQuantity = 5;
+        int secondDecreaseQuantity = 3;
+        int firstProductExpectedQuantity = firstProduct.getQuantity() - firstDecreaseQuantity;
+        int secondProductExpectedQuantity = secondProduct.getQuantity() - secondDecreaseQuantity;
+        List<OrderCommandDTO.CreateOrderItemCommand> concurrentOrders = List.of(
+                OrderCommandDTO.CreateOrderItemCommand.builder()
+                        .userId(123L)
+                        .productName(firstProduct.getName())
+                        .productAmount(firstProduct.getPrice())
+                        .orderQuantity(firstDecreaseQuantity)
+                        .productId(firstProduct.getProductId())
+                        .build(),
+                OrderCommandDTO.CreateOrderItemCommand.builder()
+                        .userId(123L)
+                        .productName(secondProduct.getName())
+                        .productAmount(secondProduct.getPrice())
+                        .orderQuantity(secondDecreaseQuantity)
+                        .productId(secondProduct.getProductId())
+                        .build()
+        );
+
+        // when
+        int threadCount = 10;
+        runConcurrency(threadCount, () -> productService.decreaseStock(concurrentOrders));
+
+        // then
+        ProductEntity firstSavedProduct = productJpaRepository.findById(firstProduct.getProductId()).orElseThrow();
+        ProductEntity secondSavedProduct = productJpaRepository.findById(secondProduct.getProductId()).orElseThrow();
+
+        assertThat(firstSavedProduct.getQuantity())
+                .withFailMessage("첫번째 상품의 재고가 다릅니다.").isEqualTo(firstProductExpectedQuantity);
+        assertThat(secondSavedProduct.getQuantity())
+                .withFailMessage("두번째 상품의 재고가 다릅니다.").isEqualTo(secondProductExpectedQuantity);
+    }
+
+    private void runConcurrency(int threadCount, Runnable task) throws InterruptedException {
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executor.submit(() -> {
+                try {
+                    task.run();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        executor.shutdown();
+    }
 
 }
+
