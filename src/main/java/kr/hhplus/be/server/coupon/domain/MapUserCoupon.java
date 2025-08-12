@@ -38,6 +38,6 @@ public class MapUserCoupon {
         if (this.userId.equals(userId) && this.couponId.equals(couponId)) {
             throw new InvalidCouponStateException(ExceptionCode.ALREADY_ISSUED_COUPON,"이미 발급된 쿠폰입니다. userId: " + userId + ", couponId: " + couponId);
         }
-
     }
+
 }

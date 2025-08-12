@@ -1,12 +1,17 @@
 package kr.hhplus.be.server.point.application;
 
 
+import jakarta.persistence.LockTimeoutException;
+import jakarta.persistence.PessimisticLockException;
 import kr.hhplus.be.server.point.application.dto.PointCommandDTO;
 import kr.hhplus.be.server.point.common.TransactionType;
 import kr.hhplus.be.server.point.domain.Point;
 import kr.hhplus.be.server.point.domain.PointHistory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DeadlockLoserDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +23,15 @@ public class PointService {
     private final PointRepository pointRepository;
     private final PointHistoryRepository pointHistoryRepository;
 
+    @Retryable(retryFor = {
+            PessimisticLockException.class,
+            LockTimeoutException.class,
+            DeadlockLoserDataAccessException.class
+    },
+            maxAttempts = 2,
+            backoff = @Backoff(delay = 100)
+    )
+    @Transactional
     public PointCommandDTO.ChargePointResult chargePoint(PointCommandDTO.chargePointCommand chargePointCommand) {
         // 요청 유저에 대한 data row 가 없으면 새로 생성
         Point userPoint = pointRepository.findByUserId(chargePointCommand.getUserId());
@@ -34,13 +48,13 @@ public class PointService {
         return PointCommandDTO.ChargePointResult.from(savedPoint);
     }
 
-
     public PointCommandDTO.GetUserPointResult getUserPoint(Long userId){
         final long findUserId = userId;
         Point userPoint = pointRepository.findByUserId(findUserId);
         return PointCommandDTO.GetUserPointResult.from(userPoint);
     }
 
+    @Transactional
     public PointCommandDTO.WithDrawPointResult withdrawPoint(PointCommandDTO.withdrawPointCommand withdrawPointCommand) {
         // Point 테이블의 유저의 row가 없으면 0포인트로 간주
         Point userPoint = pointRepository.findByUserId(withdrawPointCommand.getUserId());

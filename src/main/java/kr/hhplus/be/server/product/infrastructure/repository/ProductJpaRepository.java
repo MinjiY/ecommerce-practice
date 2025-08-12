@@ -1,8 +1,10 @@
 package kr.hhplus.be.server.product.infrastructure.repository;
 
+import jakarta.persistence.LockModeType;
 import kr.hhplus.be.server.product.application.dto.findProductDTO;
 import kr.hhplus.be.server.product.infrastructure.entity.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -10,6 +12,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long> {
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<ProductEntity> findAllByProductIdIsIn(List<Long> productIds);
 
     @Query(nativeQuery = true, value = QueryString.FIND_TOP_N_PRODUCTS_LAST_M_DAYS)
     List<findProductDTO> findTopNProductsLastMDays(

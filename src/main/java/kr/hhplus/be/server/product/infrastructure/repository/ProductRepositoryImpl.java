@@ -21,26 +21,26 @@ import java.util.List;
 @Slf4j
 public class ProductRepositoryImpl implements ProductRepository {
 
-    private final ProductJpaRepository productRepository;
+    private final ProductJpaRepository productJpaRepository;
     private final ProductNativeMapper productNativeMapper;
 
 
     @Transactional(readOnly = true)
     @Override
     public Product findById(Long productId) {
-        return ProductMapper.INSTANCE.entityToDomain(productRepository.findById(productId).orElseThrow(ResourceNotFoundException::new));
+        return ProductMapper.INSTANCE.entityToDomain(productJpaRepository.findById(productId).orElseThrow(ResourceNotFoundException::new));
     }
 
     @Transactional
     @Override
     public Product save(Product product) {
-        return ProductMapper.INSTANCE.entityToDomain(productRepository.save(ProductMapper.INSTANCE.domainToEntity(product)));
+        return ProductMapper.INSTANCE.entityToDomain(productJpaRepository.save(ProductMapper.INSTANCE.domainToEntity(product)));
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<Product> findAllById(List<Long> productIds){
-        List<Product> products = productRepository.findAllById(productIds).stream()
+        List<Product> products = productJpaRepository.findAllByProductIdIsIn(productIds).stream()
                 .map(ProductMapper.INSTANCE::entityToDomain)
                 .toList();
         return products;
@@ -52,7 +52,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         List<ProductEntity> productEntities = products.stream()
                 .map(product -> productNativeMapper.domainToEntity(product))
                 .toList();
-        return productRepository.saveAll(productEntities).stream()
+        return productJpaRepository.saveAll(productEntities).stream()
                 .map(ProductMapper.INSTANCE::entityToDomain)
                 .toList();
     }
@@ -60,7 +60,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Transactional(readOnly = true)
     @Override
     public List<TopNProduct> findTopNProductsLastMDays(LocalDate currentDate, Long topN, Long lastM) {
-        List<findProductDTO> findProductDTOList = productRepository.findTopNProductsLastMDays(currentDate, topN, lastM);
+        List<findProductDTO> findProductDTOList = productJpaRepository.findTopNProductsLastMDays(currentDate, topN, lastM);
         return findProductDTOList.stream()
                         .map(ProductMapper.INSTANCE::toTopNProductDto)
                                 .toList();
