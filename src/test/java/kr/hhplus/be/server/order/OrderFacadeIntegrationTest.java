@@ -441,17 +441,21 @@ public class OrderFacadeIntegrationTest {
         PointEntity resultPoint = pointJpaRepository.findById(userId).orElseThrow();
         assertThat(resultPoint.getBalance()).isEqualTo(expectedUserPoint);
 
-        // 쿠폰 사용 여부
-        MapUserCouponEntity resultMapUserCoupon = mapUserCouponJpaRepository.findByUserIdAndCouponId(
-                userId, coupon.getCouponId()
-            ).orElseThrow();
-        assertThat(resultMapUserCoupon.getCouponState()).isEqualTo(CouponState.USED);
-        assertThat(resultMapUserCoupon.getCouponId()).isEqualTo(coupon.getCouponId());
+        // 쿠폰은 주문/결제에서 사용을 결정하는게 아님!
+//        // 쿠폰 사용 여부
+//        MapUserCouponEntity resultMapUserCoupon = mapUserCouponJpaRepository.findByUserIdAndCouponId(
+//                userId, coupon.getCouponId()
+//            ).orElseThrow();
+//        assertThat(resultMapUserCoupon.getCouponState()).isEqualTo(CouponState.USED);
+//        assertThat(resultMapUserCoupon.getCouponId()).isEqualTo(coupon.getCouponId());
 
 
         // 주문
         OrderEntity resultOrder = orderJpaRepository.findById(result.getOrderId()).orElseThrow();
         assertThat(resultOrder.getOrderStatus()).isEqualTo(OrderStatus.COMPLETED);
+        assertThat(resultOrder.getDiscountAmount()).isEqualTo(couponDiscountAmount);
+        assertThat(resultOrder.getPaidAmount()).isEqualTo(paidAmount);
+
     }
 
 
