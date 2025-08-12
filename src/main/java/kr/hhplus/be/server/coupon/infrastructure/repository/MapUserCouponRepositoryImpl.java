@@ -33,7 +33,10 @@ public class MapUserCouponRepositoryImpl implements MapUserCouponRepository {
         MapUserCouponEntity mapUserCouponEntity = mapUserCouponJpaRepository.findByUserIdAndCouponId(
                 mapUserCoupon.getUserId(),
                 mapUserCoupon.getCouponId()
-        ).orElseThrow(() -> new ResourceNotFoundException("쿠폰을 찾을 수 없습니다."));
+        ).orElse(MapUserCouponEntity.builder()
+                .userId(mapUserCoupon.getUserId())
+                .couponId(0L)
+                .build());
         return CouponMapper.INSTANCE.entityToMapUserCouponDomain(mapUserCouponEntity);
     }
 

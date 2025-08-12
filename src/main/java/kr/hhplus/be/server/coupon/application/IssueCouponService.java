@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import kr.hhplus.be.server.coupon.application.dto.CouponCommandDTO;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -16,6 +17,7 @@ public class IssueCouponService implements IssueCoupon {
     private final MapUserCouponRepository mapUserCouponRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     @Override
     public CouponCommandDTO.issueCouponResult issueCoupon(CouponCommandDTO.issueCouponCommand issueCouponCommand) {
         final Long userId = issueCouponCommand.getUserId();

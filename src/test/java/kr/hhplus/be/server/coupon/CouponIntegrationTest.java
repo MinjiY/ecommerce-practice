@@ -2,6 +2,8 @@ package kr.hhplus.be.server.coupon;
 
 
 import kr.hhplus.be.server.common.CleanUp;
+import kr.hhplus.be.server.coupon.application.IssueCouponService;
+import kr.hhplus.be.server.coupon.application.dto.CouponCommandDTO;
 import kr.hhplus.be.server.coupon.common.CouponState;
 import kr.hhplus.be.server.coupon.domain.Coupon;
 import kr.hhplus.be.server.coupon.domain.MapUserCoupon;
@@ -22,6 +24,9 @@ import org.testcontainers.utility.TestcontainersConfiguration;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -31,6 +36,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @AutoConfigureMockMvc
 @Import({TestcontainersConfiguration.class})
 public class CouponIntegrationTest {
+
+    @Autowired
+    private IssueCouponService issueCouponService;
 
     @Autowired
     private CleanUp cleanUp;
@@ -50,6 +58,10 @@ public class CouponIntegrationTest {
 
     private MapUserCoupon mapUserCoupon;
 
+    private Integer issuableQuantity = 3;
+    private Integer issuedQuantity = 0;
+    private Integer remainingQuantity = 3;
+
     @BeforeEach
     void setUp() {
         long userId = 1L;
@@ -63,17 +75,11 @@ public class CouponIntegrationTest {
                 .couponName("50% 할인 쿠폰")
                 .discountRate(new BigDecimal("0.5"))
                 .expirationDate(LocalDate.of(2025, 12, 31))
-                .issuableQuantity(10)
-                .remainingQuantity(9)
-                .issuedQuantity(1)
+                .issuableQuantity(issuableQuantity)
+                .remainingQuantity(remainingQuantity)
+                .issuedQuantity(issuedQuantity)
                 .build());
 
-        MapUserCouponEntity mapUserCouponEntity = mapUserCouponJpaRepository.save(MapUserCouponEntity.builder()
-                .userId(userId)
-                .couponId(couponEntity.getCouponId())
-                .couponState(CouponState.ACTIVE)
-                .couponName(couponEntity.getCouponName())
-                .build());
 
         user = User.builder()
                 .userId(userEntity.getUserId())
@@ -87,12 +93,6 @@ public class CouponIntegrationTest {
                 .expirationDate(couponEntity.getExpirationDate())
                 .build();
 
-        mapUserCoupon = MapUserCoupon.builder()
-                .userId(mapUserCouponEntity.getUserId())
-                .couponId(mapUserCouponEntity.getCouponId())
-                .couponState(mapUserCouponEntity.getCouponState())
-                .couponName(mapUserCouponEntity.getCouponName())
-                .build();
     }
 
     @AfterEach
@@ -105,18 +105,31 @@ public class CouponIntegrationTest {
     @Test
     void issuedCouponTest(){
         // when
-        MapUserCouponEntity savedMapUserCouponEntity = mapUserCouponJpaRepository.save(
-                MapUserCouponEntity.builder()
+        issueCouponService.issueCoupon(
+                CouponCommandDTO.issueCouponCommand.builder()
                         .userId(user.getUserId())
                         .couponId(coupon.getCouponId())
-                        .couponState(CouponState.ACTIVE)
-                        .couponName(coupon.getCouponName())
                         .build()
         );
+
+        CouponEntity couponEntity = couponJpaRepository.findById(coupon.getCouponId())
+                .orElseThrow(null);
+        MapUserCouponEntity savedMapUserCouponEntity = mapUserCouponJpaRepository.findByUserIdAndCouponId(user.getUserId(), coupon.getCouponId())
+                .orElseThrow(null);
+
         assertThat(savedMapUserCouponEntity).isNotNull();
         assertThat(savedMapUserCouponEntity.getUserId()).isEqualTo(user.getUserId());
         assertThat(savedMapUserCouponEntity.getCouponId()).isEqualTo(coupon.getCouponId());
         assertThat(savedMapUserCouponEntity.getCouponState()).isEqualTo(CouponState.ACTIVE);
         assertThat(savedMapUserCouponEntity.getCouponName()).isEqualTo(coupon.getCouponName());
+
+        assertThat(couponEntity).isNotNull();
+        assertThat(couponEntity.getCouponId()).isEqualTo(coupon.getCouponId());
+        assertThat(couponEntity.getCouponName()).isEqualTo(coupon.getCouponName());
+        assertThat(couponEntity.getIssuedQuantity()).isEqualTo(1);
+        assertThat(couponEntity.getRemainingQuantity()).isEqualTo(2);
+        assertThat(couponEntity.getExpirationDate()).isEqualTo(coupon.getExpirationDate());
     }
+
+
 }
