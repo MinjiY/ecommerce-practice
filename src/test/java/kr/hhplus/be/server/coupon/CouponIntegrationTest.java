@@ -58,14 +58,16 @@ public class CouponIntegrationTest {
 
     private MapUserCoupon mapUserCoupon;
 
-    private Integer issuableQuantity = 3;
-    private Integer issuedQuantity = 0;
-    private Integer remainingQuantity = 3;
+    private Integer issuableQuantity;
+    private Integer issuedQuantity;
+    private Integer remainingQuantity;
 
     @BeforeEach
     void setUp() {
         long userId = 1L;
-
+        issuableQuantity = 3;
+        issuedQuantity = 0;
+        remainingQuantity = 3;
         UserEntity userEntity = UserEntity.builder()
                 .userId(userId)
                 .accounts("account1")
@@ -129,6 +131,58 @@ public class CouponIntegrationTest {
         assertThat(couponEntity.getIssuedQuantity()).isEqualTo(1);
         assertThat(couponEntity.getRemainingQuantity()).isEqualTo(2);
         assertThat(couponEntity.getExpirationDate()).isEqualTo(coupon.getExpirationDate());
+    }
+
+
+    @DisplayName("쿠폰 발급 동시성 테스트 - 여러 유저가 동시에 쿠폰을 발급받는 경우")
+    @Test
+    void issuedCouponConcurrentTest() throws InterruptedException {
+
+        int threadCount = 3;
+        runConcurrent(threadCount, () -> {
+            issueCouponService.issueCoupon(
+                    CouponCommandDTO.issueCouponCommand.builder()
+                            .userId(user.getUserId())
+                            .couponId(coupon.getCouponId())
+                            .build()
+
+            );
+        });
+
+
+        MapUserCouponEntity getMapUserCouponEntity = mapUserCouponJpaRepository.findByUserIdAndCouponId(user.getUserId(), coupon.getCouponId())
+                .orElseThrow(null);
+        CouponEntity getCouponEntity = couponJpaRepository.findById(coupon.getCouponId())
+                .orElseThrow(null);
+
+        assertThat(getMapUserCouponEntity).isNotNull();
+        assertThat(getMapUserCouponEntity.getUserId()).isEqualTo(user.getUserId());
+        assertThat(getMapUserCouponEntity.getCouponId()).isEqualTo(coupon.getCouponId());
+        assertThat(getMapUserCouponEntity.getCouponState()).isEqualTo(CouponState.ACTIVE);
+        assertThat(getMapUserCouponEntity.getCouponName()).isEqualTo(coupon.getCouponName());
+
+        // 발급된 쿠폰의 수량은 스레드를 3개 돌렸지만 1개만 발급되었어야함
+        assertThat(getCouponEntity).isNotNull();
+        assertThat(getCouponEntity.getIssuedQuantity()).isEqualTo(1);
+        assertThat(getCouponEntity.getRemainingQuantity()).isEqualTo(2);
+    }
+
+    private void runConcurrent(int threadCount, Runnable task) throws InterruptedException {
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executor.submit(() -> {
+                try {
+                    task.run();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        executor.shutdown();
     }
 
 
