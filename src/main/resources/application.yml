@@ -12,6 +12,11 @@ spring:
     properties:
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
+
+io:
+  admin:
+    fcfs: 10
+
 #  sql:
 #    init:
 #      mode: always
@@ -37,12 +42,12 @@ spring:
     redis:
       cluster:
         nodes:
-          - host.docker.internal:7001
-          - host.docker.internal:7002
-          - host.docker.internal:7003
-          - host.docker.internal:7004
-          - host.docker.internal:7005
-          - host.docker.internal:7006
+          - redis-7001:7001
+          - redis-7002:7002
+          - redis-7003:7003
+          - redis-7004:7004
+          - redis-7005:7005
+          - redis-7006:7006
       timeout: 2000
 
 ---

@@ -61,6 +61,10 @@ dependencies {
 
 	implementation("org.springframework.retry:spring-retry")
 	implementation("org.springframework.boot:spring-boot-starter-aop")
+
+	// Redis
+	implementation ("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation ("org.redisson:redisson-spring-boot-starter:3.24.3")
 }
 
 tasks.withType<Test> {
