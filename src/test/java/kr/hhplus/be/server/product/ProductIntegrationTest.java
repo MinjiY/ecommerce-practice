@@ -57,7 +57,7 @@ public class ProductIntegrationTest {
                         .category("IT")
                         .description("First Test Product Description")
                 .productState(ProductState.AVAILABLE)
-                .quantity(10)
+                .quantity(100)
                 .build());
 
         ProductEntity secondProductEntity = productJpaRepository.save(ProductEntity.builder()
@@ -66,7 +66,7 @@ public class ProductIntegrationTest {
                         .description("Second Test Product Description")
                 .price(1000L)
                 .productState(ProductState.AVAILABLE)
-                .quantity(10)
+                .quantity(100)
                 .build());
 
         firstProduct = Product.builder()
@@ -138,8 +138,8 @@ public class ProductIntegrationTest {
         // given
         int firstDecreaseQuantity = 5;
         int secondDecreaseQuantity = 3;
-        int firstProductExpectedQuantity = firstProduct.getQuantity() - firstDecreaseQuantity;
-        int secondProductExpectedQuantity = secondProduct.getQuantity() - secondDecreaseQuantity;
+        int firstProductExpectedQuantity = firstProduct.getQuantity() - (firstDecreaseQuantity * 10); // thoreadCount = 10
+        int secondProductExpectedQuantity = secondProduct.getQuantity() - (secondDecreaseQuantity * 10);// thoreadCount = 10
         List<OrderCommandDTO.CreateOrderItemCommand> concurrentOrders = List.of(
                 OrderCommandDTO.CreateOrderItemCommand.builder()
                         .userId(123L)
@@ -166,9 +166,9 @@ public class ProductIntegrationTest {
         ProductEntity secondSavedProduct = productJpaRepository.findById(secondProduct.getProductId()).orElseThrow();
 
         assertThat(firstSavedProduct.getQuantity())
-                .withFailMessage("첫번째 상품의 재고가 다릅니다.").isEqualTo(firstProductExpectedQuantity);
+                .withFailMessage("첫번째 상품의 재고가 다릅니다. 실행 후: "+ firstSavedProduct.getQuantity() + " 기댓값: "+ firstProductExpectedQuantity).isEqualTo(firstProductExpectedQuantity);
         assertThat(secondSavedProduct.getQuantity())
-                .withFailMessage("두번째 상품의 재고가 다릅니다.").isEqualTo(secondProductExpectedQuantity);
+                .withFailMessage("두번째 상품의 재고가 다릅니다. 실행 후:"+ secondSavedProduct.getQuantity() + " 기댓값: "+ secondProductExpectedQuantity).isEqualTo(secondProductExpectedQuantity);
     }
 
     private void runConcurrency(int threadCount, Runnable task) throws InterruptedException {
