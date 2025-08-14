@@ -33,6 +33,18 @@ spring:
     username: application
     password: application
 
+  data:
+    redis:
+      cluster:
+        nodes:
+          - host.docker.internal:7001
+          - host.docker.internal:7002
+          - host.docker.internal:7003
+          - host.docker.internal:7004
+          - host.docker.internal:7005
+          - host.docker.internal:7006
+      timeout: 2000
+
 ---
 spring.config.activate.on-profile: test
 
