@@ -16,15 +16,15 @@ import java.util.List;
 @Service
 public class OrderFacadeService {
 
-    private ProductService productService;
-    private PointService pointService;
-    private PaymentService paymentService;
-    private OrderService orderService;
+    private final ProductService productService;
+    private final PointService pointService;
+    //private final PaymentService paymentService;
+    private final OrderService orderService;
 
     @Transactional
-    public OrderCommandDTO.CreateOrderResult createOrder(OrderCommandDTO.CreateOrderCommand createOrderCommand) {
+    public OrderCommandDTO.CreateOrderResult createOrder(OrderCommandDTO.CreateOrderCommand createOrderCommand){
         // 상품 재고 감소
-        List<ProductServiceDTO.ProductResult> productResults =  productService.decreaseStock(createOrderCommand.getOrderedProducts());
+        List<ProductServiceDTO.ProductResult> productResults = productService.decreaseStock(createOrderCommand.getOrderedProducts());
 
         // 포인트 차감
         PointCommandDTO.WithDrawPointResult withDrawPointResult = pointService.withdrawPoint(PointCommandDTO.withdrawPointCommand.builder()
@@ -33,10 +33,10 @@ public class OrderFacadeService {
                 .build());
 
         // 결제 내역 기록
-        OrderCommandDTO.PaymentHistoryResult paymentHistoryResult =  paymentService.processPayment(createOrderCommand.toPaymentCommand());
+        //OrderCommandDTO.PaymentHistoryResult paymentHistoryResult =  paymentService.processPayment(createOrderCommand.toPaymentCommand());
         OrderCommandDTO.CreateOrderResult createOrderResult = orderService.createOrder(createOrderCommand);
-        createOrderResult.setPaymentHistoryId(paymentHistoryResult.getPaymentHistoryId());
-        createOrderResult.setPaymentStatus(paymentHistoryResult.getPaymentStatus());
+        //createOrderResult.setPaymentHistoryId(paymentHistoryResult.getPaymentHistoryId());
+        //createOrderResult.setPaymentStatus(paymentHistoryResult.getPaymentStatus());
         return createOrderResult;
     }
 

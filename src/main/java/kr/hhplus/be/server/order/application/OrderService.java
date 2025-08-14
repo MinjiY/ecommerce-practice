@@ -5,17 +5,24 @@ import kr.hhplus.be.server.order.application.dto.OrderCommandDTO.CreateOrderComm
 import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.domain.OrderItem;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
+
+    @Transactional
     public OrderCommandDTO.CreateOrderResult createOrder(CreateOrderCommand createOrderCommand) {
         List<OrderItem> orderItems = createOrderCommand.getOrderedProducts().stream()
                 .map(OrderCommandDTO.CreateOrderItemCommand::toDomain)

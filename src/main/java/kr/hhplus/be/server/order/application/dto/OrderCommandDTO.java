@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import kr.hhplus.be.server.order.common.PaymentStatus;
 import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.domain.OrderItem;
-import kr.hhplus.be.server.order.domain.PaymentHistory;
+//import kr.hhplus.be.server.order.domain.PaymentHistory;
 import kr.hhplus.be.server.order.mapper.OrderMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,15 +40,15 @@ public class OrderCommandDTO {
             return this;
         }
 
-        public PaymentCommand toPaymentCommand() {
-            return PaymentCommand.builder()
-                    .userId(this.userId)
-                    .totalAmount(this.orderedAmount)
-                    .discountAmount(this.discountAmount)
-                    .paidAmount(this.paidAmount)
-                    .couponId(this.isCouponUsed ? this.couponId : null)
-                    .build();
-        }
+//        public PaymentCommand toPaymentCommand() {
+//            return PaymentCommand.builder()
+//                    .userId(this.userId)
+//                    .totalAmount(this.orderedAmount)
+//                    .discountAmount(this.discountAmount)
+//                    .paidAmount(this.paidAmount)
+//                    .couponId(this.isCouponUsed ? this.couponId : null)
+//                    .build();
+//        }
 
         public Order toDomain(){
             return OrderMapper.INSTANCE.dtoToDomain(this);
@@ -84,23 +84,23 @@ public class OrderCommandDTO {
 
         private Long paidAmount;        // 결제 금액, 실제 결제된 금액
 
-        private LocalDate orderedDate;
+        private LocalDate orderDate;
         private LocalDate updateDate;
         private LocalDateTime orderedAt;
         private LocalDateTime updatedAt;
 
         // -- pay
-        private Long paymentHistoryId; // 결제 기록 ID, 생성된 결제 기록의 ID
-        private PaymentStatus paymentStatus; // 결제 상태
+//        private Long paymentHistoryId; // 결제 기록 ID, 생성된 결제 기록의 ID
+//        private PaymentStatus paymentStatus; // 결제 상태
 
         private List<CreateOrderItemResult> orderedProducts;
 
-        public void setPaymentHistoryId(Long paymentHistoryId) {
-            this.paymentHistoryId = paymentHistoryId;
-        }
-        public void setPaymentStatus(PaymentStatus paymentStatus) {
-            this.paymentStatus = paymentStatus;
-        }
+//        public void setPaymentHistoryId(Long paymentHistoryId) {
+//            this.paymentHistoryId = paymentHistoryId;
+//        }
+//        public void setPaymentStatus(PaymentStatus paymentStatus) {
+//            this.paymentStatus = paymentStatus;
+//        }
 
         public static CreateOrderResult from(Order order, List<OrderItem> orderItems) {
 
@@ -110,7 +110,7 @@ public class OrderCommandDTO {
                 .orderedAmount(order.getTotalAmount())
                 .discountAmount(order.getDiscountAmount())
                 .paidAmount(order.getPaidAmount())
-                    .orderedDate(order.getOrderedDate())
+                    .orderDate(order.getOrderDate())
                 .updateDate(order.getUpdateDate())
                 .orderedAt(order.getOrderedAt())
                 .updatedAt(order.getUpdatedAt())
@@ -142,52 +142,54 @@ public class OrderCommandDTO {
         }
     }
 
-    @Builder
-    @AllArgsConstructor
-    public static class PaymentCommand {
-        private Long userId;
-        private Long totalAmount;
-        private Long discountAmount;
-        private Long paidAmount; // 결제 금액, 실제 결제된 금액
-        private Long couponId;
-
-        @Builder.Default
-        private PaymentStatus paymentStatus = PaymentStatus.SUCCESS;
-
-        public PaymentHistory toDomain(){
-            return PaymentHistory.builder()
-                    .userId(this.userId)
-                    .totalAmount(this.totalAmount)
-                    .discountAmount(this.discountAmount)
-                    .couponId(this.couponId)
-                    .paymentStatus(this.paymentStatus)
-                    .build();
-        }
-    }
-
-    @Builder
-    @AllArgsConstructor
-    @Getter
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class PaymentHistoryResult {
-        private Long paymentHistoryId; // 결제 기록 ID, 생성된 결제 기록의 ID
-        private Long userId;
-        private Long totalAmount;
-        private Long discountAmount;
-        private Long paidAmount; // 결제 금액, 실제 결제된 금액
-        private Long couponId;
-        private PaymentStatus paymentStatus;
-
-        public static PaymentHistoryResult from(PaymentHistory paymentHistory) {
-            return PaymentHistoryResult.builder()
-                    .paymentHistoryId(paymentHistory.getPaymentHistoryId())
-                    .userId(paymentHistory.getUserId())
-                    .totalAmount(paymentHistory.getTotalAmount())
-                    .discountAmount(paymentHistory.getDiscountAmount())
-                    .paidAmount(paymentHistory.getPaidAmount())
-                    .couponId(paymentHistory.getPaymentStatus() == PaymentStatus.DISCOUNT ? paymentHistory.getCouponId() : null)
-                    .paymentStatus(paymentHistory.getPaymentStatus())
-                    .build();
-        }
-    }
+//    @Getter
+//    @Builder
+//    @AllArgsConstructor
+//    public static class PaymentCommand {
+//        private Long userId;
+//        private Long totalAmount;
+//        private Long discountAmount;
+//        private Long paidAmount; // 결제 금액, 실제 결제된 금액
+//        private Long couponId;
+//
+//        @Builder.Default
+//        private PaymentStatus paymentStatus = PaymentStatus.SUCCESS;
+//
+//        public PaymentHistory toDomain(){
+//            return PaymentHistory.builder()
+//                    .userId(this.userId)
+//                    .totalAmount(this.totalAmount)
+//                    .discountAmount(this.discountAmount)
+//                    .paidAmount(this.paidAmount)
+//                    .couponId(this.couponId)
+//                    .paymentStatus(this.paymentStatus)
+//                    .build();
+//        }
+//    }
+//
+//    @Builder
+//    @AllArgsConstructor
+//    @Getter
+//    @JsonInclude(JsonInclude.Include.NON_NULL)
+//    public static class PaymentHistoryResult {
+//        private Long paymentHistoryId; // 결제 기록 ID, 생성된 결제 기록의 ID
+//        private Long userId;
+//        private Long totalAmount;
+//        private Long discountAmount;
+//        private Long paidAmount; // 결제 금액, 실제 결제된 금액
+//        private Long couponId;
+//        private PaymentStatus paymentStatus;
+//
+//        public static PaymentHistoryResult from(PaymentHistory paymentHistory) {
+//            return PaymentHistoryResult.builder()
+//                    .paymentHistoryId(paymentHistory.getPaymentHistoryId())
+//                    .userId(paymentHistory.getUserId())
+//                    .totalAmount(paymentHistory.getTotalAmount())
+//                    .discountAmount(paymentHistory.getDiscountAmount())
+//                    .paidAmount(paymentHistory.getPaidAmount())
+//                    .couponId(paymentHistory.getPaymentStatus() == PaymentStatus.DISCOUNT ? paymentHistory.getCouponId() : null)
+//                    .paymentStatus(paymentHistory.getPaymentStatus())
+//                    .build();
+//        }
+//    }
 }

@@ -18,6 +18,29 @@
 결제를 위해서는 충전된 금액이 있어야 하며, 충전된 금액이 부족하면 결제를 할 수 없다.
 결제 금액이 충전된 금액보다 크면 결제할 수 없다는 메시지를 띄운다.
 
+### 쿠폰 시나리오
+1. 쿠폰 사용   
+쿠폰 사용의 시점은 **주문서를 작성할 때** "사용 가능 쿠폰"을 조회하여 사용할 수 있다.   
+사용 가능 쿠폰을 조회하면 유저가 사용할 수 있는 쿠폰의 리스트 조회하여 모달에 보여준다.   
+그 중 하나만 선택할 수 있다.
+하나의 주문 당 쿠폰은 하나만 사용 가능하다.
+쿠폰 사용은 주문 생성 API에 포함하지 않고 쿠폰 사용 API를 따로 호출한다.
+주문서를 생성할때 쿠폰 사용 API를 함께 호출하지 않고 "사용 가능 쿠폰" 모달에서 "쿠폰 적용" 하면 호출한다.
+
+쿠폰 생성은 admin의 역할
+
+
+2. 쿠폰 발급
+사용자는 선착순으로 쿠폰을 발급받으며 100명이 발급받으면 101명부터는 쿠폰 발급이 실패한다.
+발급 페이지에 접속을 위해 대기열에 태우는 것이 아닌 발급 호출시 비즈니스 규칙을 모두 검사 후 태운다.
+
+3. 쿠폰 만료
+스케줄러로 매 자정에 쿠폰 만료 서비스가 호출된다.
+
+4. 쿠폰 사용 취소
+주문서 작성을 취소하면 쿠폰 사용도 취소 API를 호출한다.
+주문 취소 또는 환불시 쿠폰 사용 취소 API를 호출한다.
+주문 생성 중 에러 발생시 쿠폰 사용 취소 서비스가 비동기로 호출된다.
 
 ## 📄 요구사항 정의
 ### 기능 요구사항
@@ -120,36 +143,38 @@ CREATE TABLE USERS
   USER_ID  BIGINT AUTO_INCREMENT PRIMARY KEY,
   ACCOUNTS VARCHAR(30) NOT NULL
 );
-CREATE TABLE COUPONS
+CREATE TABLE COUPON
 (
   COUPON_ID          BIGINT AUTO_INCREMENT PRIMARY KEY,
-  COUPON_CODE        VARCHAR(50) NOT NULL,
-  COUPON_STATE       VARCHAR(20) NOT NULL, -- ACTIVE, USED, EXPIRED
-  EXPIRATION_DAYS    INT         NOT NULL,
-  ISSUABLE_QUANTITY  INT         NOT NULL,
-  REMAINING_QUANTITY INT         NOT NULL,
+  COUPON_NAME        VARCHAR(50) NOT NULL,
+  EXPIRATION_DATE    DATE        NOT NULL,
+  ISSUABLE_QUANTITY  INT         NOT NULL, -- 발급 가능한 쿠폰 수량
+  ISSUED_QUANTITY    INT         NOT NULL, -- 발급된 쿠폰 수량
+  REMAINING_QUANTITY INT         NOT NULL, -- 남은 쿠폰 수량
   DISCOUNT_RATE      DECIMAL(5, 2)
 );
 CREATE TABLE MAP_USER_COUPON
 (
-  USER_ID   BIGINT NOT NULL,
-  COUPON_ID BIGINT NOT NULL,
-  PRIMARY KEY (USER_ID, COUPON_ID),
-  FOREIGN KEY (USER_ID) REFERENCES USERS (USER_ID),
-  FOREIGN KEY (COUPON_ID) REFERENCES COUPONS (COUPON_ID)
+  USER_ID            BIGINT NOT NULL,
+  COUPON_ID          BIGINT NOT NULL,
+  COUPON_STATE       VARCHAR(20) NOT NULL, -- ACTIVE, USED, EXPIRED
+  COUPON_NAME        VARCHAR(50) NOT NULL,
+  PRIMARY KEY (USER_ID, COUPON_ID)
 );
 CREATE TABLE ORDERS
 (
   ORDER_ID        BIGINT AUTO_INCREMENT PRIMARY KEY,
   USER_ID         BIGINT      NOT NULL,
-  ORDER_STATUS    VARCHAR(20) NOT NULL, -- PENDING, COMPLETED, CANCELED
-  TOTAL_AMOUNT    BIGINT      NOT NULL,
-  DISCOUNT_AMOUNT BIGINT      NOT NULL,
-  PAYMENT_HISTORY_ID BIGINT   NOT NULL,
-  CREATED_AT      TIMESTAMP   NOT NULL,
+  ORDER_STATUS    VARCHAR(20) NOT NULL, -- COMPLETED, CANCELED
+  TOTAL_AMOUNT    BIGINT      NOT NULL, -- 총 주문 금액
+  DISCOUNT_AMOUNT BIGINT      NOT NULL, -- 할인 금액
+  PAID_AMOUNT     BIGINT      NOT NULL, -- 결제 금액 (총 주문 금액에서 할인받은 금액)
+  ORDER_DATE      DATE        NOT NULL,
+  UPDATE_DATE     DATE        NOT NULL,
+  ORDERED_AT      TIMESTAMP   NOT NULL,
   UPDATED_AT      TIMESTAMP   NOT NULL
 );
-CREATE TABLE ORDER_ITEMS
+CREATE TABLE ORDER_ITEM
 (
   ORDER_ITEM_ID  BIGINT AUTO_INCREMENT PRIMARY KEY,
   ORDER_ID       BIGINT       NOT NULL,
@@ -158,6 +183,10 @@ CREATE TABLE ORDER_ITEMS
   PRODUCT_AMOUNT BIGINT       NOT NULL,
   ORDER_QUANTITY INT          NOT NULL,
   PRODUCT_ID     BIGINT       NOT NULL,
+  ORDER_DATE     DATE         NOT NULL,
+  UPDATE_DATE    DATE         NOT NULL,
+  ORDERED_AT      TIMESTAMP   NOT NULL,
+  UPDATED_AT      TIMESTAMP   NOT NULL,
   FOREIGN KEY (ORDER_ID) REFERENCES ORDERS (ORDER_ID)
 );
 CREATE TABLE PAYMENT_HISTORY
@@ -166,13 +195,15 @@ CREATE TABLE PAYMENT_HISTORY
   USER_ID            BIGINT      NOT NULL,
   AMOUNT             BIGINT      NOT NULL,
   DISCOUNT_AMOUNT    BIGINT      NOT NULL,
+  PAID_AMOUNT         BIGINT      NOT NULL, -- 결제 금액 (총 주문 금액에서 할인받은 금액)
   COUPON_ID          BIGINT,
-  PAYMENT_STATUS     VARCHAR(20) NOT NULL, -- SUCCESS, FAILED, CANCELED
-  CREATED_AT         TIMESTAMP   NOT NULL,
-  UPDATED_AT         TIMESTAMP   NOT NULL,
-  FOREIGN KEY (ORDER_ID) REFERENCES ORDERS (ORDER_ID)
+  PAYMENT_STATUS     VARCHAR(20) NOT NULL, -- SUCCESS, CANCELED
+  ORDER_DATE         DATE        NOT NULL,
+  UPDATE_DATE        DATE        NOT NULL,
+  ORDERED_AT         TIMESTAMP   NOT NULL,
+  UPDATED_AT         TIMESTAMP   NOT NULL
 );
-CREATE TABLE PRODUCTS
+CREATE TABLE PRODUCT
 (
   PRODUCT_ID    BIGINT AUTO_INCREMENT PRIMARY KEY,
   NAME          VARCHAR(255) NOT NULL,
@@ -212,7 +243,6 @@ CREATE TABLE POINT_HISTORY
 [커밋링크](https://github.com/MinjiY/ecommerce-practice/commit/9c8502869767454cac46e7d568dd08a9f02bf72b)
 ### 2. Swagger-UI
 ![image/swagger-ui.png](image/swagger-ui.png)
-
 
 
 

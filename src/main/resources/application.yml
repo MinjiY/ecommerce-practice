@@ -12,7 +12,11 @@ spring:
     properties:
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
-
+#  sql:
+#    init:
+#      mode: always
+#      schema-locations: classpath:ddl.sql
+#      data-locations: classpath:test.sql
 ---
 spring.config.activate.on-profile: local
 
@@ -33,19 +37,11 @@ spring:
 spring.config.activate.on-profile: test
 
 spring:
-  # H2 Database 설정
   datasource:
-    driver-class-name: org.h2.Driver
-    url: 'jdbc:h2:mem:test'   # H2 DB 연결 주소 (In-Memory Mode)
-    #url: 'jdbc:h2:~/test'    # H2 DB 연결 주소 (Embedded Mode)
-    username: test        # H2 DB 접속 ID (사용자 지정)
-    password: test        # H2 DB 접속 PW (사용자 지정)
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-  # H2 Console 설정
-  h2:
-    console: # H2 DB를 웹에서 관리할 수 있는 기능
-      enabled: true           # H2 Console 사용 여부
-      path: /h2-console       # H2 Console 접속 주소
-  sql:
-    init:
-      schema-locations: classpath:ddl.sql
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: none  # 테스트 환경에서는 매번 테이블을 새로 생성
+    show-sql: true

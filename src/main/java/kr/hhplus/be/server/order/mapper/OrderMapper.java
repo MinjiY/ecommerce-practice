@@ -4,10 +4,10 @@ package kr.hhplus.be.server.order.mapper;
 import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
 import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.domain.OrderItem;
-import kr.hhplus.be.server.order.domain.PaymentHistory;
+//import kr.hhplus.be.server.order.domain.PaymentHistory;
 import kr.hhplus.be.server.order.infrastructure.entity.OrderEntity;
 import kr.hhplus.be.server.order.infrastructure.entity.OrderItemEntity;
-import kr.hhplus.be.server.order.infrastructure.entity.PaymentHistoryEntity;
+//import kr.hhplus.be.server.order.infrastructure.entity.PaymentHistoryEntity;
 import kr.hhplus.be.server.order.presentation.dto.RequestDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -26,7 +26,7 @@ public interface OrderMapper {
     @Mapping(target = "orderedAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "orderId", ignore = true)
-    @Mapping(target = "orderStatus", ignore = true)
+    //@Mapping(target = "orderStatus", ignore = true)
     Order dtoToDomain(OrderCommandDTO.CreateOrderCommand createOrderCommand);
 
     OrderItem dtoToDomain(OrderCommandDTO.CreateOrderItemCommand createOrderItemCommand);
@@ -44,8 +44,8 @@ public interface OrderMapper {
     OrderCommandDTO.CreateOrderItemCommand requestToCommand(RequestDTO.CreateOrderItemRequest createOrderItemRequest);
 
 
-    PaymentHistory entityToPaymentHistoryDomain(PaymentHistoryEntity paymentHistoryEntity);
-    PaymentHistoryEntity domainToPaymentHistoryEntity(PaymentHistory paymentHistory);
+//    PaymentHistory entityToPaymentHistoryDomain(PaymentHistoryEntity paymentHistoryEntity);
+//    PaymentHistoryEntity domainToPaymentHistoryEntity(PaymentHistory paymentHistory);
 
 
 }

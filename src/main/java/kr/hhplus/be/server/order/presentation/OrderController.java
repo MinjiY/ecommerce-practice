@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private OrderFacadeService orderFacadeService;
+    private final OrderFacadeService orderFacadeService;
 
     @PostMapping("/orders")
     public ResponseEntity<ApiResponse<OrderCommandDTO.CreateOrderResult>> createOrder(

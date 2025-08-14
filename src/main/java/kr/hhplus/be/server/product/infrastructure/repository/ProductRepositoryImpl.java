@@ -7,50 +7,60 @@ import kr.hhplus.be.server.product.domain.Product;
 import kr.hhplus.be.server.product.domain.TopNProduct;
 import kr.hhplus.be.server.product.infrastructure.entity.ProductEntity;
 import kr.hhplus.be.server.product.mapper.ProductMapper;
+import kr.hhplus.be.server.product.mapper.ProductNativeMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.JpaRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ProductRepositoryImpl implements ProductRepository {
 
-    private final ProductJpaRepository productRepository;
-    private ProductMapper productMapper;
+    private final ProductJpaRepository productJpaRepository;
+    private final ProductNativeMapper productNativeMapper;
 
+
+    @Transactional(readOnly = true)
     @Override
     public Product findById(Long productId) {
-        return ProductMapper.INSTANCE.entityToDomain(productRepository.findById(productId).orElseThrow(ResourceNotFoundException::new));
+        return ProductMapper.INSTANCE.entityToDomain(productJpaRepository.findById(productId).orElseThrow(ResourceNotFoundException::new));
     }
 
+    @Transactional
     @Override
     public Product save(Product product) {
-        return ProductMapper.INSTANCE.entityToDomain(productRepository.save(productMapper.domainToEntity(product)));
+        return ProductMapper.INSTANCE.entityToDomain(productJpaRepository.save(ProductMapper.INSTANCE.domainToEntity(product)));
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<Product> findAllById(List<Long> productIds) {
-        return productRepository.findAllById(productIds).stream()
-                .map(productMapper::entityToDomain)
+    public List<Product> findAllById(List<Long> productIds){
+        List<Product> products = productJpaRepository.findAllByProductIdIsIn(productIds).stream()
+                .map(ProductMapper.INSTANCE::entityToDomain)
                 .toList();
+        return products;
     }
 
+    @Transactional
     @Override
     public List<Product> saveAll(List<Product> products) {
         List<ProductEntity> productEntities = products.stream()
-                .map(productMapper::domainToEntity)
+                .map(product -> productNativeMapper.domainToEntity(product))
                 .toList();
-        return productRepository.saveAll(productEntities).stream()
-                .map(productMapper::entityToDomain)
+        return productJpaRepository.saveAll(productEntities).stream()
+                .map(productNativeMapper::entityToDomain)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<TopNProduct> findTopNProductsLastMDays(LocalDate currentDate, Long topN, Long lastM) {
-        List<findProductDTO> findProductDTOList = productRepository.findTopNProductsLastMDays(currentDate, topN, lastM);
+        List<findProductDTO> findProductDTOList = productJpaRepository.findTopNProductsLastMDays(currentDate, topN, lastM);
         return findProductDTOList.stream()
                         .map(ProductMapper.INSTANCE::toTopNProductDto)
                                 .toList();

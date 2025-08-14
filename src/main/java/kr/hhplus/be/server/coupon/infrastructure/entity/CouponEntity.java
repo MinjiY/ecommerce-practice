@@ -20,6 +20,8 @@ public class CouponEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long couponId;
 
+    private String couponName;
+
     private LocalDate expirationDate;
 
     private Integer issuableQuantity;
@@ -31,8 +33,9 @@ public class CouponEntity {
     private BigDecimal discountRate;
 
     @Builder
-    public CouponEntity(Long couponId, LocalDate expirationDate, Integer issuableQuantity, Integer issuedQuantity, Integer remainingQuantity, BigDecimal discountRate) {
+    public CouponEntity(Long couponId, String couponName,LocalDate expirationDate, Integer issuableQuantity, Integer issuedQuantity, Integer remainingQuantity, BigDecimal discountRate) {
         this.couponId = couponId;
+        this.couponName = couponName;
         this.expirationDate = expirationDate;
         this.issuableQuantity = issuableQuantity;
         this.issuedQuantity = issuedQuantity;

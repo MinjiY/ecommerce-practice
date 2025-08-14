@@ -6,6 +6,7 @@ import kr.hhplus.be.server.product.common.ProductState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 

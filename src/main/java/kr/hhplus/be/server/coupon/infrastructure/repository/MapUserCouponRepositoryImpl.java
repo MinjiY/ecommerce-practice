@@ -6,17 +6,19 @@ import kr.hhplus.be.server.coupon.infrastructure.entity.MapUserCouponEntity;
 import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.mapper.CouponMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-public class MapUserMapUserCouponRepositoryImpl implements MapUserCouponRepository {
+@Component
+public class MapUserCouponRepositoryImpl implements MapUserCouponRepository {
 
-    private final MapUserCouponJpaRepositoryImpl mapUserCouponJpaRepository;
-
-    private final CouponMapper couponMapper;
+    private final MapUserCouponJpaRepository mapUserCouponJpaRepository;
 
     // 사용 가능한 쿠폰 목록 조회
+    @Transactional(readOnly = true)
     @Override
     public List<MapUserCoupon> findAvailableCouponsByUserIdAndCouponState(MapUserCoupon mapUserCoupon){
         List<MapUserCouponEntity> mapUserCouponEntities = mapUserCouponJpaRepository.findAllByUserIdAndCouponState(mapUserCoupon.getUserId(), mapUserCoupon.getCouponState());
@@ -25,18 +27,23 @@ public class MapUserMapUserCouponRepositoryImpl implements MapUserCouponReposito
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public MapUserCoupon findByUserIdAndCouponId(MapUserCoupon mapUserCoupon){
         MapUserCouponEntity mapUserCouponEntity = mapUserCouponJpaRepository.findByUserIdAndCouponId(
                 mapUserCoupon.getUserId(),
                 mapUserCoupon.getCouponId()
-        ).orElseThrow(() -> new ResourceNotFoundException("쿠폰을 찾을 수 없습니다."));
+        ).orElse(MapUserCouponEntity.builder()
+                .userId(mapUserCoupon.getUserId())
+                .couponId(0L)
+                .build());
         return CouponMapper.INSTANCE.entityToMapUserCouponDomain(mapUserCouponEntity);
     }
 
+    @Transactional
     @Override
     public MapUserCoupon save(MapUserCoupon mapUserCoupon) {
-        return couponMapper.entityToMapUserCouponDomain(mapUserCouponJpaRepository.save(couponMapper.domainToMapUserCouponEntity(mapUserCoupon)));
+        return CouponMapper.INSTANCE.entityToMapUserCouponDomain(mapUserCouponJpaRepository.save(CouponMapper.INSTANCE.domainToMapUserCouponEntity(mapUserCoupon)));
     }
 
 }

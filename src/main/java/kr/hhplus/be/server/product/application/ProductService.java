@@ -9,7 +9,9 @@ import kr.hhplus.be.server.product.application.dto.findProductDTO;
 import kr.hhplus.be.server.product.domain.Product;
 import kr.hhplus.be.server.product.domain.TopNProduct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,20 +20,19 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public void findAllProducts(List<Long> productIds) {
-        List<Product> products = productRepository.findAllById(productIds);
-
-    }
 
     public ProductResult findProduct(Long productId) {
         return ProductResult.from(productRepository.findById(productId));
     }
 
+    @Transactional
     public List<ProductResult> decreaseStock(List<OrderCommandDTO.CreateOrderItemCommand> orderedProducts) {
+
         Map<Long, Integer> orderedMap = orderedProducts.stream()
                 .collect(Collectors.toMap(
                         OrderCommandDTO.CreateOrderItemCommand::getProductId,
@@ -39,11 +40,13 @@ public class ProductService {
                 ));
 
         List<Product> products = productRepository.findAllById(orderedProducts.stream()
-                .map(OrderCommandDTO.CreateOrderItemCommand::getProductId)
+                    .map(OrderCommandDTO.CreateOrderItemCommand::getProductId)
                 .toList());
+
         if(products.size() != orderedProducts.size()) {
             throw new ResourceNotFoundException(ExceptionCode.RESOURCE_NOT_FOUND);
         }
+
         List<Product> decreasedProducts = products.stream()
                 .map(product -> {
                     int orderedQuantity = orderedMap.getOrDefault(product.getProductId(), 0);
@@ -62,7 +65,7 @@ public class ProductService {
      * @return 가장 많이 팔린 상품 목록
      */
     public List<ProductServiceDTO.GetTopN> getTopNBestSellingProductsLastMDays(Long topN, Long lastM) {
-        List<TopNProduct> products =  productRepository.findTopNProductsLastMDays(LocalDate.now(), topN, lastM);
+        List<TopNProduct> products = productRepository.findTopNProductsLastMDays(LocalDate.now(), topN, lastM);
         return ProductServiceDTO.GetTopN.from(products);
     }
 

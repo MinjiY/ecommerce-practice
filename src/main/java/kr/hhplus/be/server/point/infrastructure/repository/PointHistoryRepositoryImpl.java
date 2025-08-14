@@ -6,16 +6,16 @@ import kr.hhplus.be.server.point.infrastructure.entity.PointHistoryEntity;
 import kr.hhplus.be.server.point.mapper.PointMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 public class PointHistoryRepositoryImpl implements PointHistoryRepository {
 
-    private final JpaRepository<PointHistoryEntity, Long> pointHistoryJpaRepository;
-
-    private PointMapper pointMapper;
+    private final PointHistoryJpaRepository pointHistoryRepository;
 
     @Override
     public PointHistory save(PointHistory pointHistory) {
-        return pointMapper.entityToDomain(pointHistoryJpaRepository.save(pointMapper.domainToEntity(pointHistory)));
+        return PointMapper.INSTANCE.entityToDomain(pointHistoryRepository.save(PointMapper.INSTANCE.domainToEntity(pointHistory)));
     }
 }

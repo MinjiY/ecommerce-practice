@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public class CouponService {
 
-    private MapUserCouponRepository mapUserCouponRepository;
+    private final MapUserCouponRepository mapUserCouponRepository;
 
     public CouponCommandDTO.GetAvailableCouponsResult getAvailableCoupons(Long userId) {
         final Long findUserId = userId;
