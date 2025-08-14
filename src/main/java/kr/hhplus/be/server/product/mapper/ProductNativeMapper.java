@@ -20,5 +20,16 @@ public class ProductNativeMapper {
                 .quantity(product.getQuantity())
                 .build();
     }
+    public Product entityToDomain(ProductEntity productEntity) {
+        return Product.builder()
+                .productId(productEntity.getProductId())
+                .name(productEntity.getName())
+                .price(productEntity.getPrice())
+                .description(productEntity.getDescription())
+                .category(productEntity.getCategory())
+                .productState(productEntity.getProductState())
+                .quantity(productEntity.getQuantity())
+                .build();
+    }
 }
 

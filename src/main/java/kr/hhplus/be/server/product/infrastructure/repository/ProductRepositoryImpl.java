@@ -53,7 +53,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .map(product -> productNativeMapper.domainToEntity(product))
                 .toList();
         return productJpaRepository.saveAll(productEntities).stream()
-                .map(ProductMapper.INSTANCE::entityToDomain)
+                .map(productNativeMapper::entityToDomain)
                 .toList();
     }
 

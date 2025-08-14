@@ -141,26 +141,26 @@ public class OrderFacadeIntegrationTest {
                         .build()
                 );
 
-        OrderEntity orderEntity = orderJpaRepository.save(
-                OrderEntity.builder()
-                        .userId(userId)
-                        .orderStatus(OrderStatus.COMPLETED)
-                        .totalAmount(10000L)
-                        .discountAmount(0L)
-                        .paidAmount(10000L)
-                        .build()
-                );
-
-        OrderItemEntity orderItemEntity = orderItemJpaRepository.save(
-                OrderItemEntity.builder()
-                        .order(orderEntity)
-                        .userId(userId)
-                        .productName(productEntity.getName())
-                        .productAmount(productEntity.getPrice())
-                        .orderQuantity(2)
-                        .productId(productEntity.getProductId())
-                        .build()
-                );
+//        OrderEntity orderEntity = orderJpaRepository.save(
+//                OrderEntity.builder()
+//                        .userId(userId)
+//                        .orderStatus(OrderStatus.COMPLETED)
+//                        .totalAmount(10000L)
+//                        .discountAmount(0L)
+//                        .paidAmount(10000L)
+//                        .build()
+//                );
+//
+//        OrderItemEntity orderItemEntity = orderItemJpaRepository.save(
+//                OrderItemEntity.builder()
+//                        .order(orderEntity)
+//                        .userId(userId)
+//                        .productName(productEntity.getName())
+//                        .productAmount(productEntity.getPrice())
+//                        .orderQuantity(2)
+//                        .productId(productEntity.getProductId())
+//                        .build()
+//                );
 
         UserEntity userEntity = UserEntity.builder()
                 .userId(userId)
@@ -208,21 +208,21 @@ public class OrderFacadeIntegrationTest {
                 .amount(pointHistoryEntity.getAmount())
                 .transactionType(pointHistoryEntity.getTransactionType())
                 .build();
-        order = Order.builder()
-                .orderId(orderEntity.getOrderId())
-                .userId(orderEntity.getUserId())
-                .orderStatus(orderEntity.getOrderStatus())
-                .totalAmount(orderEntity.getTotalAmount())
-                .discountAmount(orderEntity.getDiscountAmount())
-                .paidAmount(orderEntity.getPaidAmount())
-                .build();
-        orderItem = OrderItem.builder()
-                .userId(orderItemEntity.getUserId())
-                .productName(orderItemEntity.getProductName())
-                .productAmount(orderItemEntity.getProductAmount())
-                .orderQuantity(orderItemEntity.getOrderQuantity())
-                .productId(orderItemEntity.getProductId())
-                .build();
+//        order = Order.builder()
+//                .orderId(orderEntity.getOrderId())
+//                .userId(orderEntity.getUserId())
+//                .orderStatus(orderEntity.getOrderStatus())
+//                .totalAmount(orderEntity.getTotalAmount())
+//                .discountAmount(orderEntity.getDiscountAmount())
+//                .paidAmount(orderEntity.getPaidAmount())
+//                .build();
+//        orderItem = OrderItem.builder()
+//                .userId(orderItemEntity.getUserId())
+//                .productName(orderItemEntity.getProductName())
+//                .productAmount(orderItemEntity.getProductAmount())
+//                .orderQuantity(orderItemEntity.getOrderQuantity())
+//                .productId(orderItemEntity.getProductId())
+//                .build();
 
         coupon = Coupon.builder()
                 .couponId(couponEntity.getCouponId())
@@ -243,8 +243,8 @@ public class OrderFacadeIntegrationTest {
         String secondProductName = "Second Test Product";
         Long firstProductPrice = 30L;
         Long secondProductPrice = 10L;
-        Integer firstProductQuantity = 10;
-        Integer secondProductQuantity = 10;
+        Integer firstProductQuantity = 100;
+        Integer secondProductQuantity = 100;
 
         ProductEntity firstProductEntity = productJpaRepository.save(ProductEntity.builder()
                 .name(firstProductName)
@@ -497,7 +497,9 @@ public class OrderFacadeIntegrationTest {
     @Test
     void createOrderTestWithConcurrentRequests() throws InterruptedException {
         // given
-        Long userId = 123L;
+        Long userId = 1L;
+        int threadCount = 5;
+
         Long firstProductId = firstProduct.getProductId();
         Long secondProductId = secondProduct.getProductId();
 
@@ -507,27 +509,45 @@ public class OrderFacadeIntegrationTest {
         Integer firstProductOrderQuantity = 1; // 첫 번째 상품 주문 수량
         Integer secondProductOrderQuantity = 2; // 두 번째 상품 주문 수량
 
-        Integer firstProductExpectedQuantity = initialFirstProductQuantity - firstProductOrderQuantity; // 주문 수량 1개로 가정
-        Integer secondProductExpectedQuantity = initialSecondProductQuantity - secondProductOrderQuantity; // 주문 수량 2개로 가정
+        Integer firstProductExpectedQuantity = initialFirstProductQuantity - (firstProductOrderQuantity * threadCount); // 주문 수량 1개로 가정 -> threadCount = 5
+        Integer secondProductExpectedQuantity = initialSecondProductQuantity - (secondProductOrderQuantity * threadCount); // 주문 수량 2개로 가정 -> threadCount = 5
 
 
         Long initialUserPoint = point.getBalance();
-        Long totalAmount = (firstProduct.getPrice() * firstProductOrderQuantity) + (secondProduct.getPrice() * secondProductExpectedQuantity);
-        Long expectedUserPoint = initialUserPoint - totalAmount;
+        Long totalAmount = (firstProduct.getPrice() * firstProductOrderQuantity) + (secondProduct.getPrice() * secondProductOrderQuantity);
+        Long expectedUserPoint = (initialUserPoint - (totalAmount*5)); // threadCount = 5, 주문 금액은 총 5번 주문으로 계산
 
-        int threadCount = 5;
         runConcurrent(threadCount, () -> {
-            orderFacadeService.createOrder(
-                OrderCommandDTO.CreateOrderCommand.builder()
-                        .userId(userId)
-                        .paidAmount(totalAmount)
-                        .discountAmount(0L)
-                        .orderedAmount(totalAmount)
-                        .orderedProducts(orderedProducts)
-                        .build()
+            List<OrderCommandDTO.CreateOrderItemCommand> orderProducts = List.of(
+                    OrderCommandDTO.CreateOrderItemCommand.builder()
+                            .userId(userId)
+                            .productName(firstProduct.getName())
+                            .productAmount(firstProduct.getPrice())
+                            .orderQuantity(firstProductOrderQuantity)
+                            .productId(firstProduct.getProductId())
+                            .build(),
+                    OrderCommandDTO.CreateOrderItemCommand.builder()
+                            .userId(userId)
+                            .productName(secondProduct.getName())
+                            .productAmount(secondProduct.getPrice())
+                            .orderQuantity(secondProductOrderQuantity)
+                            .productId(secondProduct.getProductId())
+                            .build()
             );
+            // price 30, 10
+            // orderQuantity 1, 2
+            // 총 주문 금액 = (30 * 1) + (10 * 2) = 50 * 5? => 250
+            long paidAmount = firstProduct.getPrice() * firstProductOrderQuantity
+                    + secondProduct.getPrice() * secondProductOrderQuantity;
+            OrderCommandDTO.CreateOrderCommand command = OrderCommandDTO.CreateOrderCommand.builder()
+                    .userId(userId)
+                    .paidAmount(paidAmount)
+                    .discountAmount(0L)
+                    .orderedAmount(paidAmount)
+                    .orderedProducts(orderProducts)
+                    .build();
+            orderFacadeService.createOrder(command);
         });
-
 
         // then
         ProductEntity firstResultProduct = productJpaRepository.findById(firstProductId).orElseThrow();
@@ -538,11 +558,13 @@ public class OrderFacadeIntegrationTest {
         assertThat(secondResultProduct.getQuantity()).withFailMessage("두번째 재고 수량이 맞지 않습니다. " +
                 "결과 : " + secondResultProduct.getQuantity() +" 기댓값: " + secondProductExpectedQuantity).isEqualTo(secondProductExpectedQuantity);
 
-        PointEntity resultPoint = pointJpaRepository.findById(userId).orElseThrow();
-        assertThat(resultPoint.getBalance()).withFailMessage("유저 포인트가 맞지 않습니다.").isEqualTo(expectedUserPoint);
+        PointEntity resultPoint = pointJpaRepository.findByUserIdForTest(userId).orElseThrow();
+        assertThat(resultPoint.getBalance()).withFailMessage("유저 포인트가 맞지 않습니다. 실행 후: " + resultPoint.getBalance() + " 기댓값: "+expectedUserPoint).isEqualTo(expectedUserPoint);
 
         List<OrderEntity> resultOrders = orderJpaRepository.findAllByUserId(userId);
-        assertThat(resultOrders.size()).isEqualTo(10);
+
+
+        assertThat(resultOrders.size()).isEqualTo(threadCount);
     }
 
     private void runConcurrent(int threadCount, Runnable task) throws InterruptedException {

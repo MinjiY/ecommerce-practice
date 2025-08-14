@@ -26,7 +26,7 @@ public interface OrderMapper {
     @Mapping(target = "orderedAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "orderId", ignore = true)
-    @Mapping(target = "orderStatus", ignore = true)
+    //@Mapping(target = "orderStatus", ignore = true)
     Order dtoToDomain(OrderCommandDTO.CreateOrderCommand createOrderCommand);
 
     OrderItem dtoToDomain(OrderCommandDTO.CreateOrderItemCommand createOrderItemCommand);
