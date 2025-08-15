@@ -6,7 +6,6 @@ import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO.ProductResult;
 import kr.hhplus.be.server.product.common.ProductState;
 import kr.hhplus.be.server.product.domain.Product;
-import kr.hhplus.be.server.product.infrastructure.entity.ProductEntity;
 import kr.hhplus.be.server.product.mapper.ProductMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,10 +23,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ProductServiceTest {
+class ProductServiceImplTest {
 
     @InjectMocks
-    private ProductService productService;
+    private ProductServiceImpl productServiceImpl;
 
     @Mock
     private ProductRepository productRepository;
@@ -55,7 +53,7 @@ class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(product);
 
         // when
-        ProductResult result = productService.findProduct(productId);
+        ProductResult result = productServiceImpl.findProduct(productId);
 
         // then
         verify(productRepository).findById(productId);
@@ -117,7 +115,7 @@ class ProductServiceTest {
         when(productRepository.saveAll(any())).thenReturn(products);
 
         // when
-        List<ProductResult> result = productService.decreaseStock(
+        List<ProductResult> result = productServiceImpl.decreaseStock(
                 List.of(
                         OrderCommandDTO.CreateOrderItemCommand.builder()
                                 .productId(firstProductId)

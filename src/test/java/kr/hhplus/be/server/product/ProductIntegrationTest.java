@@ -2,7 +2,7 @@ package kr.hhplus.be.server.product;
 
 import kr.hhplus.be.server.common.CleanUp;
 import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
-import kr.hhplus.be.server.product.application.ProductService;
+import kr.hhplus.be.server.product.application.ProductServiceImpl;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO;
 import kr.hhplus.be.server.product.common.ProductState;
 import kr.hhplus.be.server.product.domain.Product;
@@ -37,7 +37,7 @@ public class ProductIntegrationTest {
     private ProductJpaRepository productJpaRepository;
 
     @Autowired
-    private ProductService productService;
+    private ProductServiceImpl productServiceImpl;
 
     private Product firstProduct;
 
@@ -117,7 +117,7 @@ public class ProductIntegrationTest {
     void decreaseStock() {
         // given
         // when
-        List<ProductServiceDTO.ProductResult> result = productService.decreaseStock(orderedProducts);
+        List<ProductServiceDTO.ProductResult> result = productServiceImpl.decreaseStock(orderedProducts);
 
         ProductEntity firstProductEntity = productJpaRepository.findById(firstProduct.getProductId())
                 .orElseThrow();
@@ -159,7 +159,7 @@ public class ProductIntegrationTest {
 
         // when
         int threadCount = 10;
-        runConcurrency(threadCount, () -> productService.decreaseStock(concurrentOrders));
+        runConcurrency(threadCount, () -> productServiceImpl.decreaseStock(concurrentOrders));
 
         // then
         ProductEntity firstSavedProduct = productJpaRepository.findById(firstProduct.getProductId()).orElseThrow();
