@@ -12,6 +12,11 @@ spring:
     properties:
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
+
+io:
+  admin:
+    fcfs: 10
+
 #  sql:
 #    init:
 #      mode: always
@@ -32,6 +37,18 @@ spring:
     url: jdbc:mysql://localhost:3306/hhplus?characterEncoding=UTF-8&serverTimezone=UTC
     username: application
     password: application
+
+  data:
+    redis:
+      cluster:
+        nodes:
+          - redis-7001:7001
+          - redis-7002:7002
+          - redis-7003:7003
+          - redis-7004:7004
+          - redis-7005:7005
+          - redis-7006:7006
+      timeout: 2000
 
 ---
 spring.config.activate.on-profile: test
