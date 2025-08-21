@@ -2,7 +2,7 @@ package kr.hhplus.be.server.product.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import kr.hhplus.be.server.product.application.ProductServiceImpl;
+import kr.hhplus.be.server.product.application.ProductService;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final ProductServiceImpl productServiceImpl;
+    private final ProductService productService;
 
     @Operation(summary = "상품 정보 조회", description = "productId로 상품 정보를 조회합니다.")
     @GetMapping("/products/{productId}")
     public ResponseEntity<ApiResponse<ProductServiceDTO.ProductResult>> getProduct(
             @PathVariable Long productId
     ) {
-        ProductServiceDTO.ProductResult productResult = productServiceImpl.findProduct(productId);
+        ProductServiceDTO.ProductResult productResult = productService.findProduct(productId);
         return ResponseEntity.ok(ApiResponse.success(productResult));
     }
 
@@ -31,6 +31,6 @@ public class ProductController {
             @RequestParam(defaultValue = "5") Long topN,
             @RequestParam(defaultValue = "3") Long lastDays
     ) {
-        return ResponseEntity.ok(ApiResponse.success(productServiceImpl.getTopNBestSellingProductsLastMDays(topN, lastDays)));
+        return ResponseEntity.ok(ApiResponse.success(productService.getTopNBestSellingProductsLastMDaysRedis(topN, lastDays)));
     }
 }

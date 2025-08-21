@@ -66,5 +66,5 @@ coupon
   - entity: domain과 분리된 entity class들의 집합, 책임, 관심사 분리
 
 #### Layered Architecture(Interface)
-![img.png](img.png)
+![img.png](image/img.png)
 각 상위 패키지별 묶어서 그렸고 Controller에서는 각 Service class를 의존성 주입받지만 각 서비스 클래스 내에서는 Repository interface를 가지고 구현체를 주입 받도록 해서 의존성의 방향이 한쪽으로 흐르게 했습니다

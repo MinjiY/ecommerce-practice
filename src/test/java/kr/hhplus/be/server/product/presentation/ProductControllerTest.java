@@ -3,7 +3,7 @@
 //import kr.hhplus.be.server.product.common.ProductState;
 //import kr.hhplus.be.server.product.infrastructure.entity.ProductEntity;
 //import kr.hhplus.be.server.product.application.ProductRepository;
-//import kr.hhplus.be.server.product.infrastructure.repository.ProductRepositoryImpl;
+//import kr.hhplus.be.server.product.infrastructure.repository.rdb.ProductRepositoryImpl;
 //import kr.hhplus.be.server.product.mapper.ProductMapper;
 //import lombok.RequiredArgsConstructor;
 //import org.junit.jupiter.api.BeforeEach;

@@ -24,4 +24,7 @@ public interface ProductMapper {
     TopNProduct toTopNProductDto(findProductDTO findProductDTO);
 
     ProductServiceDTO.GetTopN toTopNProductResponse(TopNProduct topNProduct);
+
+    ProductServiceDTO.GetTopN toTopNProductResponse(Product product);
+
 }

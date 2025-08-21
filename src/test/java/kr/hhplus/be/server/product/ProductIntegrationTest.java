@@ -2,12 +2,12 @@ package kr.hhplus.be.server.product;
 
 import kr.hhplus.be.server.common.CleanUp;
 import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
-import kr.hhplus.be.server.product.application.ProductServiceImpl;
+import kr.hhplus.be.server.product.application.ProductService;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO;
 import kr.hhplus.be.server.product.common.ProductState;
 import kr.hhplus.be.server.product.domain.Product;
 import kr.hhplus.be.server.product.infrastructure.entity.ProductEntity;
-import kr.hhplus.be.server.product.infrastructure.repository.ProductJpaRepository;
+import kr.hhplus.be.server.product.infrastructure.repository.rdb.ProductJpaRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -37,7 +37,7 @@ public class ProductIntegrationTest {
     private ProductJpaRepository productJpaRepository;
 
     @Autowired
-    private ProductServiceImpl productServiceImpl;
+    private ProductService productService;
 
     private Product firstProduct;
 
@@ -117,7 +117,7 @@ public class ProductIntegrationTest {
     void decreaseStock() {
         // given
         // when
-        List<ProductServiceDTO.ProductResult> result = productServiceImpl.decreaseStock(orderedProducts);
+        List<ProductServiceDTO.ProductResult> result = productService.decreaseStock(orderedProducts);
 
         ProductEntity firstProductEntity = productJpaRepository.findById(firstProduct.getProductId())
                 .orElseThrow();
@@ -159,7 +159,7 @@ public class ProductIntegrationTest {
 
         // when
         int threadCount = 10;
-        runConcurrency(threadCount, () -> productServiceImpl.decreaseStock(concurrentOrders));
+        runConcurrency(threadCount, () -> productService.decreaseStock(concurrentOrders));
 
         // then
         ProductEntity firstSavedProduct = productJpaRepository.findById(firstProduct.getProductId()).orElseThrow();
