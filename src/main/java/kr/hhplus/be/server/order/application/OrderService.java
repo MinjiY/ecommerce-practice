@@ -2,6 +2,7 @@ package kr.hhplus.be.server.order.application;
 
 import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
 import kr.hhplus.be.server.order.application.dto.OrderCommandDTO.CreateOrderCommand;
+import kr.hhplus.be.server.order.application.dto.OrderEventDTO;
 import kr.hhplus.be.server.order.domain.Order;
 import kr.hhplus.be.server.order.domain.OrderItem;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,6 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-
     @Transactional
     public OrderCommandDTO.CreateOrderResult createOrder(CreateOrderCommand createOrderCommand) {
         List<OrderItem> orderItems = createOrderCommand.getOrderedProducts().stream()
@@ -35,6 +35,17 @@ public class OrderService {
 
         // 주문 아이템 저장
         List<OrderItem> savedOrderItems = orderItemRepository.saveAll(savedOrder, orderItems);
+        applicationEventPublisher.publishEvent(
+            OrderEventDTO.OrderItemRank.builder()
+                    .orderItems(
+                            savedOrderItems.stream()
+                            .map(item -> OrderEventDTO.OrderItemEventDTO.builder()
+                                    .productId(item.getProductId())
+                                    .quantity(item.getOrderQuantity())
+                                    .build())
+                            .toList())
+                    .build()
+        );
         return OrderCommandDTO.CreateOrderResult.from(savedOrder, savedOrderItems);
     }
 }

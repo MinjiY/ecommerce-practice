@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.order.infrastructure.repository;
+package kr.hhplus.be.server.order.infrastructure.repository.rdb;
 
 import kr.hhplus.be.server.order.application.OrderItemRepository;
 import kr.hhplus.be.server.order.domain.Order;

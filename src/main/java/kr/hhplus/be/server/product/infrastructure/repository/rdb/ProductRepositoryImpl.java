@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.product.infrastructure.repository;
+package kr.hhplus.be.server.product.infrastructure.repository.rdb;
 
 import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.product.application.ProductRepository;

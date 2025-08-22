@@ -4,7 +4,7 @@ package kr.hhplus.be.server.order.application;
 import kr.hhplus.be.server.order.application.dto.OrderCommandDTO;
 import kr.hhplus.be.server.point.application.PointService;
 import kr.hhplus.be.server.point.application.dto.PointCommandDTO;
-import kr.hhplus.be.server.product.application.ProductServiceImpl;
+import kr.hhplus.be.server.product.application.ProductService;
 import kr.hhplus.be.server.product.application.dto.ProductServiceDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,15 +16,14 @@ import java.util.List;
 @Service
 public class OrderFacadeService {
 
-    private final ProductServiceImpl productServiceImpl;
+    private final ProductService productService;
     private final PointService pointService;
     //private final PaymentService paymentService;
     private final OrderService orderService;
 
-    @Transactional
     public OrderCommandDTO.CreateOrderResult createOrder(OrderCommandDTO.CreateOrderCommand createOrderCommand){
         // 상품 재고 감소
-        List<ProductServiceDTO.ProductResult> productResults = productServiceImpl.decreaseStock(createOrderCommand.getOrderedProducts());
+        List<ProductServiceDTO.ProductResult> productResults = productService.decreaseStock(createOrderCommand.getOrderedProducts());
 
         // 포인트 차감
         PointCommandDTO.WithDrawPointResult withDrawPointResult = pointService.withdrawPoint(PointCommandDTO.withdrawPointCommand.builder()

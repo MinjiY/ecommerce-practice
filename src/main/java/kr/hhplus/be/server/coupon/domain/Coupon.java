@@ -42,6 +42,11 @@ public class Coupon {
         this.issuedQuantity++;
         this.remainingQuantity--;
     }
+    public void setIssuedQuantity(Integer issuedQuantity, Integer remainingQuantity, Integer issuableQuantity) {
+        this.issuedQuantity = issuedQuantity;
+        this.remainingQuantity = remainingQuantity;
+        this.issuableQuantity = issuableQuantity;
+    }
 
     public void validateCouponForIssuance() {
         if (this.remainingQuantity <= 0) {

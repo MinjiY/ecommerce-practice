@@ -23,10 +23,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ProductServiceImplTest {
+class ProductServiceTest {
 
     @InjectMocks
-    private ProductServiceImpl productServiceImpl;
+    private ProductService productService;
 
     @Mock
     private ProductRepository productRepository;
@@ -53,7 +53,7 @@ class ProductServiceImplTest {
         when(productRepository.findById(productId)).thenReturn(product);
 
         // when
-        ProductResult result = productServiceImpl.findProduct(productId);
+        ProductResult result = productService.findProduct(productId);
 
         // then
         verify(productRepository).findById(productId);
@@ -115,7 +115,7 @@ class ProductServiceImplTest {
         when(productRepository.saveAll(any())).thenReturn(products);
 
         // when
-        List<ProductResult> result = productServiceImpl.decreaseStock(
+        List<ProductResult> result = productService.decreaseStock(
                 List.of(
                         OrderCommandDTO.CreateOrderItemCommand.builder()
                                 .productId(firstProductId)

@@ -63,6 +63,12 @@ public class ProductServiceDTO {
                     .map(ProductMapper.INSTANCE::toTopNProductResponse)
                     .toList();
         }
+        public static List<GetTopN> of(List<Product> products) {
+            return products.stream()
+                    .map(ProductMapper.INSTANCE::toTopNProductResponse)
+                    .toList();
+        }
+
     }
 
 

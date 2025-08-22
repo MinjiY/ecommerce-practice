@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.product.infrastructure.repository;
+package kr.hhplus.be.server.product.infrastructure.repository.rdb;
 
 import jakarta.persistence.LockModeType;
 import kr.hhplus.be.server.product.application.dto.findProductDTO;

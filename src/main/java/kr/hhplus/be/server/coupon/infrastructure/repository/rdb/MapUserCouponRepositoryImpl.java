@@ -1,9 +1,8 @@
-package kr.hhplus.be.server.coupon.infrastructure.repository;
+package kr.hhplus.be.server.coupon.infrastructure.repository.rdb;
 
 import kr.hhplus.be.server.coupon.application.MapUserCouponRepository;
 import kr.hhplus.be.server.coupon.domain.MapUserCoupon;
 import kr.hhplus.be.server.coupon.infrastructure.entity.MapUserCouponEntity;
-import kr.hhplus.be.server.exception.custom.ResourceNotFoundException;
 import kr.hhplus.be.server.mapper.CouponMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

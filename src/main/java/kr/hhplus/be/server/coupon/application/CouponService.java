@@ -5,6 +5,7 @@ import kr.hhplus.be.server.coupon.common.CouponState;
 import kr.hhplus.be.server.coupon.domain.MapUserCoupon;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class CouponService {
         return CouponCommandDTO.GetAvailableCouponsResult.from(findUserId, mapUserCoupons);
     }
 
+    @Transactional
     public CouponCommandDTO.canceledCouponResult cancelCoupon(CouponCommandDTO.cancelCouponCommand cancelCouponCommand) {
         MapUserCoupon foundMapUserCoupon = mapUserCouponRepository.findByUserIdAndCouponId(MapUserCoupon.builder()
                 .userId(cancelCouponCommand.getUserId())
@@ -35,6 +37,7 @@ public class CouponService {
         return CouponCommandDTO.canceledCouponResult.from(canceledCoupon);
     }
 
+    @Transactional
     public CouponCommandDTO.useCouponResult useCoupon(CouponCommandDTO.useCouponCommand useCouponCommand) {
         MapUserCoupon foundMapUserCoupon = mapUserCouponRepository.findByUserIdAndCouponId(MapUserCoupon.builder()
                 .userId(useCouponCommand.getUserId())
