@@ -1,3 +1,18 @@
+## Redis의 Lock
+Redis가 Lock을 구현할 수 있는 배경에는 `SET ... NX`라는 원자적 연산이 있다.
+이 명령어가 분산 환경에서의 락 구현의 토대가 된다.
+```shell
+SET key, value NX PX 30000
+```
+key, value를 저장하는데 NotExists일 경우에 저장하고 30초(30000ms) 유지
+
+```shell
+DEL key
+```
+위 잠금에 대한 해제를 한다.
+
+
+
 # Redis를 이용한 랭킹 시스템
 ## Redis 명령어를 통해 생각해본 로직 검증해보기
 ### 1. 3일동안 가장 많이 팔린 제품 5개

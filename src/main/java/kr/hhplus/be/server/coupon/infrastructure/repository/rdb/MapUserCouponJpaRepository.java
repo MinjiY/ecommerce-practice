@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.coupon.infrastructure.repository;
+package kr.hhplus.be.server.coupon.infrastructure.repository.rdb;
 
 import kr.hhplus.be.server.coupon.common.CouponState;
 import kr.hhplus.be.server.coupon.infrastructure.entity.MapUserCouponEntity;

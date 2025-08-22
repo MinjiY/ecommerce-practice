@@ -49,6 +49,15 @@ public class ApiResponse<T> {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+    public static <T> ApiResponse<T> success(HttpStatus status, T data, String message) {
+        return ApiResponse.<T>builder()
+                .status(status)
+                .code(HttpStatus.OK.toString())
+                .data(data)
+                .message(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 
     public static <T> ApiResponse<T> success(String message) {
         return ApiResponse.<T>builder()
